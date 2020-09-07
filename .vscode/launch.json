@@ -13,6 +13,7 @@
             "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
             "args": [],
             "cwd": "${workspaceFolder}/cryptothune.Cli",
+            //"cwd": "${workspaceFolder}/Output",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

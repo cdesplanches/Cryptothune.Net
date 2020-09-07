@@ -10,9 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <Content  Include=".\credentials" Condition="Exists('.\credentials')">
+      <Content Include=".\credentials" Condition="Exists('.\credentials')">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content >
+      </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
 
 </Project>

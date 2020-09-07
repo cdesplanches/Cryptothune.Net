@@ -87,13 +87,13 @@ namespace Cryptothune.Lib
                     }
                 }
 
-                Task.Delay(500);
+                Task.Delay(18000).Wait();
             }
             
         }
 
 
-        public async Task DryRun(IStrategy strategy, string symbol = "XTZEUR")
+        public void DryRun(IStrategy strategy, string symbol = "XTZEUR")
         {
             while (true)
             {
@@ -111,7 +111,7 @@ namespace Cryptothune.Lib
                     }
                 }
 
-                await Task.Delay(500);
+                Task.Delay(18000).Wait();
             }
         }
     }
