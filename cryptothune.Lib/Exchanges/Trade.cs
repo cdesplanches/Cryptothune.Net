@@ -3,10 +3,13 @@ using System;
 
 namespace Cryptothune.Lib
 {
-    public struct Trade
+    public class Trade
     {
-        [Flags]
         public enum TOrderType { Buy = 1, Sell = 2 };
+
+        public Trade( )
+        {
+        }
 
         public double RefPrice { get; set; }
 

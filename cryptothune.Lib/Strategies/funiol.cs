@@ -40,10 +40,5 @@ namespace Cryptothune.Lib
             Random rand = new Random();
             return (rand.NextDouble() < penality);
         }
-
-        public bool Apply(double[] prices)
-        {
-            return true;
-        }
     }
 }

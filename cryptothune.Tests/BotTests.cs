@@ -17,11 +17,13 @@ namespace Cryptothune.Tests
         public void TestSim()
         {
             /*
-            var exchange = new ExchangeFake();
-            var portfolio = new PortfolioFake(exchange);
-            portfolio.Money = 500.0;    // Put 500 EUR as a gift.
-            var bot = new BotThune(portfolio);
-            bot.Sim(new Funiol(), "XTZEUR");
+            var bot = new BotThune<ExchangeFake>();
+            bot.MarketExchange.Deposit(500.0);
+            var strategy = new Funiol();
+            bot.AddStrategy(strategy, "XTZEUR", 0.5);
+            bot.AddStrategy(strategy, "XRPEUR", 0.1);
+            bot.AddStrategy(strategy, "BTCEUR", 0.4);
+            bot.Sim();
             */
         }
 
@@ -29,10 +31,12 @@ namespace Cryptothune.Tests
         public void TestDryRun()
         {
             /*
-            var exchange = new ExchangeKraken();
-            var portfolio = new Portfolio(exchange);
-            var bot = new BotThune(portfolio);
-            bot.Run(new Funiol(), "XTZEUR" );
+            var bot = new BotThune<ExchangeKraken>();
+            var strategy = new Funiol();
+            bot.AddStrategy(strategy, "XTZEUR", 0.5);
+            bot.AddStrategy(strategy, "XRPEUR", 0.1);
+            bot.AddStrategy(strategy, "BTCEUR", 0.4);
+            bot.DryRun();
             */
         }
 
@@ -40,10 +44,12 @@ namespace Cryptothune.Tests
         public void TestRun()
         {
             /*
-            var exchange = new ExchangeKraken();
-            var portfolio = new Portfolio(exchange);
-            var bot = new BotThune(portfolio);
-            bot.Run(new Funiol(), "XTZEUR" );
+            var bot = new BotThune<ExchangeKraken>();
+            var strategy = new Funiol();
+            bot.AddStrategy(strategy, "XTZEUR", 0.5);
+            bot.AddStrategy(strategy, "XRPEUR", 0.1);
+            bot.AddStrategy(strategy, "BTCEUR", 0.4);
+            bot.Run();
             */
         }
     }

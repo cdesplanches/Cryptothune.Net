@@ -20,16 +20,6 @@ namespace Cryptothune.Cli
 
         static int Main(string[] args)
         {
-            /*
-            var exchange = new ExchangeKraken();
-            var portfolio = new Portfolio(exchange);
-            var bot = new BotThune(portfolio);
-            bot.Run(new Funiol(), "XTZEUR" );
-
-            return 0;
-*/
-
-
              Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
@@ -41,30 +31,32 @@ namespace Cryptothune.Cli
                        else
                        {
                            Console.WriteLine($"Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example!");
                        }
 
 
                        if ( o.Simulate )
                        {
-                            var exchange = new ExchangeFake();
-                            var portfolio = new PortfolioFake(exchange);
-                            portfolio.Money = 500.0;    // Put 500 EUR as a gift.
-                            var bot = new BotThune(portfolio);
-                            bot.Sim(new Funiol(), "XTZEUR");
+                            var bot = new BotThune<ExchangeFake>();
+                            bot.MarketExchange.Deposit(500.0);
+                            var strategy = new Funiol();
+                            bot.AddStrategy(strategy, "XTZEUR", 70.0 );
+                            bot.AddStrategy(strategy, "XRPEUR", 30.0 );
+                            bot.Sim();
                        }
                        else
                        {
-                            var exchange = new ExchangeKraken();
-                            var portfolio = new Portfolio(exchange);
-                            var bot = new BotThune(portfolio);
+                            var bot = new BotThune<ExchangeKraken>();
+                            var strategy = new Funiol();
+                            bot.AddStrategy(strategy, "XTZEUR", 50.0);
+                            bot.AddStrategy(strategy, "BTCEUR", 45.0);
+                            bot.AddStrategy(strategy, "XRPEUR", 5.0 );
                             if ( o.DryRun )
                             {
-                                bot.DryRun(new Funiol(), "XTZEUR");
+                                bot.DryRun();
                             }
                             else    // Oh; real run
                             {
-                                bot.Run(new Funiol(), "XTZEUR");
+                                bot.Run();
                             }
                             
                        }

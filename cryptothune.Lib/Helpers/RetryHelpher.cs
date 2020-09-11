@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoExchange.Net.Objects;
 
 namespace Cryptothune.Lib
 {
@@ -30,29 +31,30 @@ namespace Cryptothune.Lib
         }
 
 
-        public static T RetryOnException(int times, TimeSpan delay, Func<T> operation)
+        public static WebCallResult<T> RetryOnException(int times, TimeSpan delay, Func<WebCallResult<T>> operation)
         {
             var remainingTries = times;
             var wait = delay;
-            var exceptions = new List<Exception>();
-
             do
             {
                 --remainingTries;
-                try
+                var ret = operation();
+                if (ret.Success)
                 {
-                    return operation();
+                    return ret;
                 }
-                catch (Exception e)
-                {              
-                    Console.WriteLine("Error: Retrying...");
-                    exceptions.Add(e);
-                    Task.Delay(wait).Wait();
-                    wait += delay;
+                else
+                {
+                    if (ret.Error is RateLimitError)
+                    {              
+                        Console.WriteLine("Error: Retrying...");
+                        Task.Delay(wait).Wait();
+                        wait += delay;
+                    }
                 }
             } while (remainingTries > 0);
 
-            throw new AggregateException(exceptions);
+            throw new Exception("API Call Error!!");
         }
     }
 }
