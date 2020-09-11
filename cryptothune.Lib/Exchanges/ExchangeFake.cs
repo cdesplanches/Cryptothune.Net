@@ -155,6 +155,10 @@ namespace Cryptothune.Lib
 
         public override bool Sell(string symbol, double marketPrice, double ratio, bool dry)
         {
+            if ( !_balancesTrades.ContainsKey(symbol) )
+            {
+                return false;
+            }
             var totalBalance = Balance("ZEUR");
             var qty = (double)_balances[symbol]*marketPrice;
             var prevqty = _balances[symbol]*_balancesTrades[symbol];
