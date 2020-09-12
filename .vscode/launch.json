@@ -4,55 +4,66 @@
    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
    "version": "0.2.0",
    "configurations": [
-        {
-            "name": "Docker .NET Core Attach (Preview)",
-            "type": "docker",
-            "request": "attach",
-            "platform": "netCore",
-            "sourceFileMap": {
-                "/src": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "CryptoThune - Simulation (console)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
-            "args": ["--sim"],
-            "cwd": "${workspaceFolder}/Output",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "CryptoThune - Run (console)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/Output",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "CryptoThune - Dry Run (console)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
-            "args": ["--dry"],
-            "cwd": "${workspaceFolder}/Output",
-            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
-            "stopAtEntry": false
-        },
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
+    {
+        "name": "Docker .NET Core Attach (Preview)",
+        "type": "docker",
+        "request": "attach",
+        "platform": "netCore",
+        "sourceFileMap": {
+            "/src": "${workspaceFolder}"
         }
-    ]
+    },
+    {
+        "name": "CryptoThune - Simulation (console)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "args": [
+            "--sim"
+        ],
+        "cwd": "${workspaceFolder}/Output",
+        "stopAtEntry": false,
+        "console": "internalConsole"
+    },
+    {
+        "name": "CryptoThune - Run (console)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/Output",
+        "stopAtEntry": false,
+        "console": "internalConsole"
+    },
+    {
+        "name": "CryptoThune - Dry Run (console)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "args": [
+            "--dry"
+        ],
+        "cwd": "${workspaceFolder}/Output",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    },
+    {
+        "name": ".NET Core Attach",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+    },
+    {
+        "name": "Docker .NET Core Launch",
+        "type": "docker",
+        "request": "launch",
+        "preLaunchTask": "docker-run: debug",
+        "netCore": {
+            "appProject": "${workspaceFolder}/cryptothune.Cli/cryptothune.Cli.csproj"
+        }
+    }
+]
 }
