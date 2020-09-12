@@ -1,10 +1,7 @@
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
-FROM microsoft/dotnet:2.0-runtime-nanoserver-1909 AS base
+FROM microsoft/dotnet:2.0-runtime AS base
 WORKDIR /app
 
-FROM microsoft/dotnet:2.0-sdk-nanoserver-1909 AS build
+FROM microsoft/dotnet:2.0-sdk AS build
 WORKDIR /src
 COPY ["cryptothune.Cli/cryptothune.Cli.csproj", "cryptothune.Cli/"]
 RUN dotnet restore "cryptothune.Cli/cryptothune.Cli.csproj"
