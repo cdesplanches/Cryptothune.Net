@@ -15,9 +15,6 @@ namespace Cryptothune.Lib
         public ExchangeFake()
         {
             _balances.Add( "ZEUR", 0 );
-            _balances.Add( "XRPEUR", 0 );
-            _balances.Add( "XTZEUR", 0 );
-            _balances.Add( "BTCEUR", 0 );
         }
 
         private double _money { get; set; }
@@ -46,9 +43,18 @@ namespace Cryptothune.Lib
             return "Fake";
         }
 
-        public override IEnumerable<double> PricesHistory(string symbol)
+        public override AssetName NormalizeSymbolName(string symbol)
         {
-            var con = ExportTradesOnDB(symbol);
+            var baseName = symbol.Substring(0, 3);
+            var quote = "Z" + symbol.Substring(symbol.Length-3, 3);
+
+            _balances[symbol] = 0;
+            return new AssetName(symbol, baseName, quote);
+        }
+
+        public override IEnumerable<double> PricesHistory(AssetName assetName)
+        {
+            var con = ExportTradesOnDB(assetName);
 
             // Get all prices
             var cmd = new SQLiteCommand(con);
@@ -61,9 +67,9 @@ namespace Cryptothune.Lib
         }
 
 
-        public SQLiteConnection ExportTradesOnDB(string symbol)
+        public SQLiteConnection ExportTradesOnDB(AssetName assetName)
         {
-            string cs = @"URI=file:" + symbol + ".db";
+            string cs = @"URI=file:" + assetName.SymbolName + ".db";
             var con = new SQLiteConnection(cs);
             con.Open();
             var cmd = new SQLiteCommand(con);
@@ -102,7 +108,7 @@ namespace Cryptothune.Lib
             bool fullyUpdated = false;
             while (!fullyUpdated)
             {
-                var trades = TradesHistory(symbol, dt);
+                var trades = TradesHistory(assetName, dt);
                 using (var transaction = con.BeginTransaction())
                 {
                     foreach (var it in trades.Data)
@@ -136,38 +142,38 @@ namespace Cryptothune.Lib
         }
 
 
-        public override bool Buy(string symbol, double marketPrice, double ratio, bool dry)
+        public override bool Buy(AssetName assetName, double marketPrice, double ratio, bool dry)
         {
-            var totalBalance = Balance("ZEUR");
+            var totalBalance = Balance(assetName.QuoteName);
             var qty = (totalBalance*ratio)/100.0;
             var fees = Fees(qty, Trade.TOrderType.Buy);
             var real = (qty + fees);
-            _balances[symbol] = (decimal)(real/marketPrice);
-            _balancesTrades[symbol] = (decimal)marketPrice;
-            _balances["ZEUR"] -= (decimal)real;
-            if (_balances["ZEUR"] < 0)
-                _balances["ZEUR"] = 0;
+            _balances[assetName.SymbolName] = (decimal)(real/marketPrice);
+            _balancesTrades[assetName.SymbolName] = (decimal)marketPrice;
+            _balances[assetName.QuoteName] -= (decimal)real;
+            if (_balances[assetName.QuoteName] < 0)
+                _balances[assetName.QuoteName] = 0;
 
             _money -= fees;
             return true;
         }
 
 
-        public override bool Sell(string symbol, double marketPrice, double ratio, bool dry)
+        public override bool Sell(AssetName assetName, double marketPrice, double ratio, bool dry)
         {
-            if ( !_balancesTrades.ContainsKey(symbol) )
+            if ( !_balancesTrades.ContainsKey(assetName.SymbolName) )
             {
                 return false;
             }
-            var totalBalance = Balance("ZEUR");
-            var qty = (double)_balances[symbol]*marketPrice;
-            var prevqty = _balances[symbol]*_balancesTrades[symbol];
+            var totalBalance = Balance(assetName.QuoteName);
+            var qty = (double)_balances[assetName.SymbolName]*marketPrice;
+            var prevqty = _balances[assetName.SymbolName]*_balancesTrades[assetName.SymbolName];
             var fees = Fees(qty, Trade.TOrderType.Sell);
             var real = (qty - fees);
            
-            _balances[symbol] = 0;
-            _balancesTrades[symbol] = (decimal)marketPrice;
-            _balances["ZEUR"] += (decimal)real;
+            _balances[assetName.SymbolName] = 0;
+            _balancesTrades[assetName.SymbolName] = (decimal)marketPrice;
+            _balances[assetName.QuoteName] += (decimal)real;
             
             var gain = real-(double)prevqty;
             _money += gain;

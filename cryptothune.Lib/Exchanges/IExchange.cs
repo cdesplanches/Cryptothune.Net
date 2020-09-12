@@ -5,19 +5,21 @@ namespace Cryptothune.Lib
 {
     public interface IExchange
     {
+        AssetName NormalizeSymbolName(string symbol);
+
         double Fees(double whole, Trade.TOrderType oType);
 
         Dictionary<string, decimal> Balances();
 
         double Balance(string asset);
 
-        IEnumerable<double> PricesHistory(string symbol);
+        IEnumerable<double> PricesHistory(AssetName assetName);
 
-        double MarketPrice(string symbol);
+        double MarketPrice(AssetName assetName);
         
-        Trade LatestTrade(string symbol);
+        Trade LatestTrade(AssetName assetName);
 
-        bool Buy (string symbol, double price, double qty = 100.0, bool dry = true);
-        bool Sell (string symbol, double price, double qty = 100.0, bool dry = true);
+        bool Buy (AssetName assetName, double price, double qty = 100.0, bool dry = true);
+        bool Sell (AssetName assetName, double price, double qty = 100.0, bool dry = true);
     }
 }

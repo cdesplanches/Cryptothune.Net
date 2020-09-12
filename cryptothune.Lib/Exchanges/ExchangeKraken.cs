@@ -6,8 +6,6 @@ using Kraken.Net;
 using Kraken.Net.Objects;
 using Kraken.Net.Converters;
 using CryptoExchange.Net.RateLimiter;
-using CryptoExchange.Net.Objects;
-using System.Data.SQLite;
 using System.Collections.Generic;
 
 
@@ -23,6 +21,8 @@ namespace Cryptothune.Lib
         private int _retryTimes = 4;
         private TimeSpan _retryDelay = TimeSpan.FromSeconds(1);
 
+        private bool _privateAPI = false;
+
         public ExchangeKraken()
         {
             var cred = @"./credentials";
@@ -33,6 +33,7 @@ namespace Cryptothune.Lib
                     var ko = new KrakenClientOptions();
                     ko.ApiCredentials = new ApiCredentials(stream, "krakenKey", "krakenSecret");
                     kc = new KrakenClient(ko);
+                    _privateAPI = true;
                 }
             }
             else
@@ -56,30 +57,42 @@ namespace Cryptothune.Lib
             return (double)bal.Data.CombinedBalance;
         }
 
-        public virtual double MarketPrice(string symbol)
+        public virtual double MarketPrice(AssetName assetName)
         {
-            var mk = RetryHelper<Dictionary<string, KrakenRestTick>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTickers(symbols: symbol) );
-            return (double)mk.Data[symbol].LastTrade.Price;
+            var mk = RetryHelper<Dictionary<string, KrakenRestTick>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTickers(symbols: assetName.SymbolName) );
+            return (double)mk.Data[assetName.SymbolName].LastTrade.Price;
         }
 
-        public virtual KrakenTradesResult TradesHistory(string symbol, DateTime dt)
+        public virtual KrakenTradesResult TradesHistory(AssetName assetName, DateTime dt)
         {
-            var l = RetryHelper<KrakenTradesResult>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetRecentTrades(symbol, dt) );
+            var l = RetryHelper<KrakenTradesResult>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetRecentTrades(assetName.SymbolName, dt) );
             return l.Data;
         }
 
+        /// <summary>
+        /// Normalize a given symbol name, like "XRPEUR" to the equivalent for Kraken Symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol name (ex: "XRPEUR")</param>
+        /// <returns>A generic Asset name object. </returns>
+        public virtual AssetName NormalizeSymbolName(string symbol)
+        {
+            var sym = RetryHelper<Dictionary<string, KrakenSymbol>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetSymbols(symbols: symbol) );
+            return new AssetName(sym.Data.First().Key, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
+            //return new AssetName(sym.Data.First().Value.AlternateName, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
+        }
 
-        public virtual IEnumerable<double> PricesHistory(string symbol)
+
+        public virtual IEnumerable<double> PricesHistory(AssetName assetName)
         {
             // To Do: Return here the Prices History on the specified symbol
             List<double> db = new List<double>();
             return db;
         }
 
-        public virtual Trade LatestTrade(string symbol)
+        public virtual Trade LatestTrade(AssetName assetName)
         {
             var mk = RetryHelper<KrakenUserTradesPage>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeHistory() );
-            var rt = mk.Data.Trades.First( x => x.Value.Symbol==symbol );
+            var rt = mk.Data.Trades.First( x => x.Value.Symbol==assetName.SymbolName );
             
             var trade = new Trade();
             trade.RefPrice = (double)rt.Value.Price;
@@ -96,15 +109,15 @@ namespace Cryptothune.Lib
         /// <param name="ratio"></param>
         /// <param name="dry"></param>
         /// <returns>true if the order was properly placed, false otherwise.</returns>
-        public virtual bool Buy(string symbol, double price, double ratio, bool dry)
+        public virtual bool Buy(AssetName assetName, double price, double ratio, bool dry)
         {
-            if ( ratio == 0)
+            if ( (ratio == 0) || (_privateAPI == false) )
             {
                 return false;
             }
 
-            var sym = RetryHelper<Dictionary<string, KrakenSymbol>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetSymbols(symbols: symbol) );
-            var fiatSymbol = sym.Data.First().Value.QuoteAsset;     // "XRPEUR" => "ZEUR"
+            var fiatSymbol = assetName.QuoteName;                   // "XRPEUR" => "ZEUR"
+            var assetSymbol = assetName.SymbolName;
             var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
             var qty = (totalBalance*ratio)/100.0;                   // Percentage of this total balance that can be used to place order.
             var bal = Balances();
@@ -113,12 +126,8 @@ namespace Cryptothune.Lib
             {
                 qty = availBalance;
             }
-/*
-            var bal = Balances();
-            var amount = bal["ZEUR"];
-            var qty = (double)amount / price;
-*/
-            var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(symbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
+
+            var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
             return order.Success;
         }
 
@@ -130,17 +139,18 @@ namespace Cryptothune.Lib
         /// <param name="ratio">the pourcentage to qpply on the transaction.</param>
         /// <param name="dry">Is it for real or not?</param>
         /// <returns>true if the order was properly placed, false otherwise.</returns>
-        public virtual bool Sell(string symbol, double price, double ratio, bool dry)
+        public virtual bool Sell(AssetName assetName, double price, double ratio, bool dry)
         {
-            var sym = RetryHelper<Dictionary<string, KrakenSymbol>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetSymbols(symbols: symbol) );
-            var assetSymbol = sym.Data.First().Value.BaseAsset;
+            if ( _privateAPI == false )
+            {
+                return false;
+            }
+
             var bal = Balances();
-            //var assetSymbol = symbol.Substring(0, 3);   // "BTCEUR" => "BTC"
-            //var qty = bal["XTZ"];
-            var qty = bal[assetSymbol];
+            var qty = bal[assetName.BaseName];
             if ( qty > 0)
             {
-                var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(symbol, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
+                var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetName.SymbolName, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
                 return order.Success;
             }
             

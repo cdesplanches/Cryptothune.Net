@@ -8,20 +8,9 @@ using System.Drawing;
 
 namespace Cryptothune.Lib
 {
-    public class StrategyTuple
-    {
-        public StrategyTuple(IStrategy strategy, double percent)
-        {
-            Strategy = strategy;
-            Percent = percent;
-        }
-        public IStrategy    Strategy { get; private set; }
-        public double       Percent { get; private set; }
-    }
-
     public class BotThune<T> where T : IExchange, new()
     {
-        private Dictionary<string, StrategyTuple> _strategies = new Dictionary<string, StrategyTuple>();
+        private List<StrategyObject> _strategies = new List<StrategyObject>();
 
         public BotThune()
         {
@@ -38,7 +27,8 @@ namespace Cryptothune.Lib
         /// <param name="percent">Percentage of the portfolio to allocate to this strategy</param>
         public void AddStrategy( IStrategy strategy, string symbol, double percent = 100.0)
         {
-            _strategies.Add(symbol, new StrategyTuple(strategy, percent));
+            var assetName = MarketExchange.NormalizeSymbolName(symbol);
+            _strategies.Add( new StrategyObject(strategy, assetName, percent) );
         }
 
         /// <summary>
@@ -56,8 +46,8 @@ namespace Cryptothune.Lib
            
             foreach ( var stratDef in _strategies )
             {
-                string symbol = stratDef.Key;
-                IStrategy strategy = stratDef.Value.Strategy;
+                var symbol = stratDef.AssetName;
+                var strategy = stratDef.Strategy;
                 var prices = MarketExchange.PricesHistory(symbol).ToArray();
 
                 var plt = new ScottPlot.Plot(2048, 1024);
@@ -75,20 +65,20 @@ namespace Cryptothune.Lib
                         if (prevAction == Trade.TOrderType.Buy)
                         {
                             plt.PlotPoint((double)index, price, color: Color.Red );
-                            pltMoney.PlotPoint((double)index, MarketExchange.Balance("ZEUR"), color: Color.Black);  
+                            pltMoney.PlotPoint((double)index, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
 
                             refPrice = price;
-                            MarketExchange.Sell(symbol, price, stratDef.Value.Percent, false);
+                            MarketExchange.Sell(symbol, price, stratDef.Percentage, false);
                             ++cptOp;
                             prevAction = Trade.TOrderType.Sell; 
                         }
                         else
                         {
                             plt.PlotPoint((double)index, price, color: Color.Green );
-                            pltMoney.PlotPoint((double)index, MarketExchange.Balance("ZEUR"), color: Color.Black);  
+                            pltMoney.PlotPoint((double)index, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
 
                             refPrice = price;
-                            MarketExchange.Buy(symbol, price, stratDef.Value.Percent, false);
+                            MarketExchange.Buy(symbol, price, stratDef.Percentage, false);
                             ++cptOp;
                             prevAction = Trade.TOrderType.Buy;
                         }
@@ -97,10 +87,10 @@ namespace Cryptothune.Lib
                     ++index;
                 }
 
-                plt.Title( symbol + " with " + strategy.Name() );
+                plt.Title( symbol.SymbolName + " with " + strategy.Name() );
                 plt.YLabel("Value (Euro))");
                 plt.XLabel("Time" );
-                plt.SaveFig(symbol + ".png" );
+                plt.SaveFig(symbol.SymbolName + ".png" );
             }
 
             pltMoney.Title( "Your Portfolio" );
@@ -115,20 +105,20 @@ namespace Cryptothune.Lib
             {
                 foreach ( var stratDef in _strategies )
                 {
-                    string symbol = stratDef.Key;
-                    IStrategy strategy = stratDef.Value.Strategy;
+                    var assetName = stratDef.AssetName;
+                    var strategy = stratDef.Strategy;
 
-                    var marketPrice = MarketExchange.MarketPrice(symbol);
-                    var prevTrade = MarketExchange.LatestTrade(symbol);
+                    var marketPrice = MarketExchange.MarketPrice(assetName);
+                    var prevTrade = MarketExchange.LatestTrade(assetName);
                     if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
                     {
                         if (prevTrade.OrderType == Trade.TOrderType.Buy)
                         {
-                            MarketExchange.Sell(symbol, marketPrice, stratDef.Value.Percent, false);
+                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, false);
                         }
                         else
                         {
-                            MarketExchange.Buy(symbol, marketPrice, stratDef.Value.Percent, false);
+                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, false);
                         }
                     }
 
@@ -145,20 +135,20 @@ namespace Cryptothune.Lib
             {
                 foreach ( var stratDef in _strategies )
                 {
-                    string symbol = stratDef.Key;
-                    IStrategy strategy = stratDef.Value.Strategy;
+                    var assetName = stratDef.AssetName;
+                    var strategy = stratDef.Strategy;
 
-                    var marketPrice = MarketExchange.MarketPrice(symbol);
-                    var prevTrade = MarketExchange.LatestTrade(symbol);
+                    var marketPrice = MarketExchange.MarketPrice(assetName);
+                    var prevTrade = MarketExchange.LatestTrade(assetName);
                     if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
                     {
                         if (prevTrade.OrderType == Trade.TOrderType.Buy)
                         {
-                            MarketExchange.Sell(symbol, marketPrice, stratDef.Value.Percent, true);
+                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, true);
                         }
                         else
                         {
-                            MarketExchange.Buy(symbol, marketPrice, stratDef.Value.Percent, true);
+                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, true);
                         }
                     }
 
