@@ -119,13 +119,14 @@ namespace Cryptothune.Lib
             var fiatSymbol = assetName.QuoteName;                   // "XRPEUR" => "ZEUR"
             var assetSymbol = assetName.SymbolName;
             var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
-            var qty = (totalBalance*ratio)/100.0;                   // Percentage of this total balance that can be used to place order.
+            var amount = (totalBalance*ratio)/100.0;                // Percentage of this total balance that can be used to place order.
             var bal = Balances();
             var availBalance = (double)bal[fiatSymbol];             // Available money for trading.
-            if ( qty > availBalance)
+            if ( amount > availBalance)
             {
-                qty = availBalance;
+                amount = availBalance;
             }
+            var qty = amount / price;
 
             var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
             return order.Success;
