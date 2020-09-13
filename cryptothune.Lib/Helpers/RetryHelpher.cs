@@ -45,7 +45,7 @@ namespace Cryptothune.Lib
                 }
                 else
                 {
-                    if (ret.Error is RateLimitError)
+                    if (ret.Error.Code == 3 ) // Rate Limit Error
                     {              
                         Console.WriteLine("Error: Retrying...");
                         Task.Delay(wait).Wait();
