@@ -158,11 +158,21 @@ namespace Cryptothune.Lib
             return false;
         }
         
+        /// <summary>
+        /// The name of the exchqnge market
+        /// </summary>
+        /// <returns></returns>
         public virtual string Name()
         {
             return "Kraken";
         }
 
+        /// <summary>
+        /// Return the fees for q Buy or Sell transaction.
+        /// </summary>
+        /// <param name="whole">The value to apply the fee on</param>
+        /// <param name="oType">Buy or Sell order.</param>
+        /// <returns></returns>
         public virtual double Fees(double whole, Trade.TOrderType oType)
         {
             var fee = oType == Trade.TOrderType.Buy?_krakenFeeBuy:_krakenFeeSell;
