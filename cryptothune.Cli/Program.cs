@@ -1,11 +1,15 @@
 ﻿using System;
 using CommandLine;
 using Cryptothune.Lib;
+using NLog;
+
 
 namespace Cryptothune.Cli
 {
     class Program
     {
+        private static readonly Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public class Options
         {
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
@@ -20,31 +24,34 @@ namespace Cryptothune.Cli
 
         static int Main(string[] args)
         {
-             Parser.Default.ParseArguments<Options>(args)
+            Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
-                       if (o.Verbose)
-                       {
-                           Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example! App is in Verbose mode!");
-                       }
-                       else
-                       {
-                           Console.WriteLine($"Current Arguments: -v {o.Verbose}");
-                       }
+                        Console.WriteLine("BotRunner v=1.0");
 
+                        var config = new NLog.Config.LoggingConfiguration();
 
-                       if ( o.Simulate )
-                       {
+                        // Targets where to log to: Console
+                        var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+                        config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+                        NLog.LogManager.Configuration = config;
+
+                        if (o.Verbose)
+                        {
+                            Console.WriteLine($"Verbosity: ON");
+                        }
+
+                        if ( o.Simulate )
+                        {
                             var bot = new BotThune<ExchangeFake>();
                             bot.MarketExchange.Deposit(500.0);
                             var strategy = new Funiol();
                             bot.AddStrategy(strategy, "XTZEUR", 70.0 );
                             bot.AddStrategy(strategy, "XRPEUR", 30.0 );
                             bot.Sim();
-                       }
-                       else
-                       {
+                        }
+                        else
+                        {
                             var bot = new BotThune<ExchangeKraken>();
                             var strategy = new Funiol();
                             bot.AddStrategy(strategy, "XTZEUR", 50.0);
@@ -59,7 +66,7 @@ namespace Cryptothune.Cli
                                 bot.Run();
                             }
                             
-                       }
+                        }
 
 
                    });

@@ -41,6 +41,8 @@ namespace Cryptothune.Lib
         /// </summary>
         public void Sim()
         {
+            NLog.LogManager.GetCurrentClassLogger().Info("Start simulate Buy/Sell trades");
+
             var pltMoney = new ScottPlot.Plot(2048, 1024);
             int cptOp = 0;
            

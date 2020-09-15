@@ -155,6 +155,7 @@ namespace Cryptothune.Lib
                 _balances[assetName.QuoteName] = 0;
 
             _money -= fees;
+            NLog.LogManager.GetCurrentClassLogger().Info("Buy");
             return true;
         }
 
@@ -178,6 +179,7 @@ namespace Cryptothune.Lib
             var gain = real-(double)prevqty;
             _money += gain;
 
+            NLog.LogManager.GetCurrentClassLogger().Info("Sell");
             return true;
         }
     }

@@ -8,6 +8,7 @@ using Kraken.Net.Objects;
 using Kraken.Net.Converters;
 using CryptoExchange.Net.RateLimiter;
 using System.Collections.Generic;
+using NLog;
 
 
 
@@ -24,6 +25,8 @@ namespace Cryptothune.Lib
         private TimeSpan _retryDelay = TimeSpan.FromSeconds(1);
 
         private bool _privateAPI = false;
+
+        private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public ExchangeKraken()
         {
@@ -44,7 +47,7 @@ namespace Cryptothune.Lib
             }
 
             kc.AddRateLimiter ( new RateLimiterAPIKey(15, TimeSpan.FromSeconds(3) ));
-
+            
         }
 
         public virtual int RateLimiterPenality { get; private set; }
@@ -81,7 +84,7 @@ namespace Cryptothune.Lib
         public virtual KrakenTradesResult TradesHistory(AssetName assetName, DateTime dt)
         {
             var l = RetryHelper<KrakenTradesResult>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetRecentTrades(assetName.SymbolName, dt) );
-            RateLimiterPenality += 3000;
+            RateLimiterPenality += 6000;
             return l.Data;
         }
 
@@ -150,6 +153,7 @@ namespace Cryptothune.Lib
             }
             var qty = amount / price;
 
+            _logger.Info("Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
             var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
             return order.Success;
         }
@@ -173,6 +177,7 @@ namespace Cryptothune.Lib
             var qty = bal[assetName.BaseName];
             if ( qty > 0)
             {
+                _logger.Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + (double)qty*price + " " + assetName.QuoteName );
                 var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetName.SymbolName, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
                 return order.Success;
             }
