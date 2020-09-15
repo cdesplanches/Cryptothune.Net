@@ -60,28 +60,28 @@ namespace Cryptothune.Lib
         public virtual Dictionary<string, decimal> Balances()
         {
             var bal = RetryHelper<Dictionary<string, decimal>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetBalances() );
-            RateLimiterPenality += 2000;
+            RateLimiterPenality += 6000;
             return bal.Data;
         }
 
         public virtual double Balance(string asset = "ZEUR")
         {
             var bal = RetryHelper<KrakenTradeBalance>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeBalance(asset) );
-            RateLimiterPenality += 2000;
+            RateLimiterPenality += 3000;
             return (double)bal.Data.CombinedBalance;
         }
 
         public virtual double MarketPrice(AssetName assetName)
         {
             var mk = RetryHelper<Dictionary<string, KrakenRestTick>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTickers(symbols: assetName.SymbolName) );
-            RateLimiterPenality += 2000;
+            RateLimiterPenality += 3000;
             return (double)mk.Data[assetName.SymbolName].LastTrade.Price;
         }
 
         public virtual KrakenTradesResult TradesHistory(AssetName assetName, DateTime dt)
         {
             var l = RetryHelper<KrakenTradesResult>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetRecentTrades(assetName.SymbolName, dt) );
-            RateLimiterPenality += 2000;
+            RateLimiterPenality += 3000;
             return l.Data;
         }
 
@@ -93,7 +93,7 @@ namespace Cryptothune.Lib
         public virtual AssetName NormalizeSymbolName(string symbol)
         {
             var sym = RetryHelper<Dictionary<string, KrakenSymbol>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetSymbols(symbols: symbol) );
-            RateLimiterPenality += 1000;
+            RateLimiterPenality += 3000;
             return new AssetName(sym.Data.First().Key, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
             //return new AssetName(sym.Data.First().Value.AlternateName, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
         }
@@ -113,7 +113,7 @@ namespace Cryptothune.Lib
         public virtual Trade LatestTrade(AssetName assetName)
         {
             var mk = RetryHelper<KrakenUserTradesPage>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeHistory() );
-            RateLimiterPenality += 2000;
+            RateLimiterPenality += 6000;
             var rt = mk.Data.Trades.First( x => x.Value.Symbol==assetName.SymbolName );
             
             var trade = new Trade();
@@ -151,7 +151,6 @@ namespace Cryptothune.Lib
             var qty = amount / price;
 
             var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
-            RateLimiterPenality += 1000;
             return order.Success;
         }
 
@@ -175,7 +174,6 @@ namespace Cryptothune.Lib
             if ( qty > 0)
             {
                 var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetName.SymbolName, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
-                RateLimiterPenality += 1000;
                 return order.Success;
             }
             
