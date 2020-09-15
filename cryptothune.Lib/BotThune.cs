@@ -122,7 +122,7 @@ namespace Cryptothune.Lib
                         }
                     }
 
-                    Task.Delay(18000).Wait();
+                    MarketExchange.PreventRateLimit();
                 }
             }
             
@@ -152,7 +152,7 @@ namespace Cryptothune.Lib
                         }
                     }
 
-                    Task.Delay(18000).Wait();
+                    MarketExchange.PreventRateLimit();
                 }
             }
         }

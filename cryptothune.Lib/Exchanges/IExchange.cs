@@ -21,5 +21,6 @@ namespace Cryptothune.Lib
 
         bool Buy (AssetName assetName, double price, double qty = 100.0, bool dry = true);
         bool Sell (AssetName assetName, double price, double qty = 100.0, bool dry = true);
+        void PreventRateLimit();
     }
 }

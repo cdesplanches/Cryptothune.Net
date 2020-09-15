@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Data;
 using System.Data.SQLite;
-using System.Threading;
 using System.Collections.Generic;
 
 namespace Cryptothune.Lib
@@ -135,7 +134,8 @@ namespace Cryptothune.Lib
                     fullyUpdated = true;
                 }
 
-                Thread.Sleep(3000); // To avoid a rate limit exception on Kraken API public calls.
+                PreventRateLimit(); // To avoid a rate limit exception on Kraken API public calls.
+//                Thread.Sleep(3000); 
             }
 
             return con;

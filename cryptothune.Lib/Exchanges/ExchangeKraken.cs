@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CryptoExchange.Net.Authentication;
 using Kraken.Net;
 using Kraken.Net.Objects;
 using Kraken.Net.Converters;
 using CryptoExchange.Net.RateLimiter;
 using System.Collections.Generic;
+
 
 
 namespace Cryptothune.Lib
@@ -45,27 +47,41 @@ namespace Cryptothune.Lib
 
         }
 
+        public virtual int RateLimiterPenality { get; private set; }
+
+
+        public virtual void PreventRateLimit()
+        {
+            Task.Delay(RateLimiterPenality).Wait();
+            RateLimiterPenality = 0;
+        }
+
+
         public virtual Dictionary<string, decimal> Balances()
         {
             var bal = RetryHelper<Dictionary<string, decimal>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetBalances() );
+            RateLimiterPenality += 2000;
             return bal.Data;
         }
 
         public virtual double Balance(string asset = "ZEUR")
         {
             var bal = RetryHelper<KrakenTradeBalance>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeBalance(asset) );
+            RateLimiterPenality += 1000;
             return (double)bal.Data.CombinedBalance;
         }
 
         public virtual double MarketPrice(AssetName assetName)
         {
             var mk = RetryHelper<Dictionary<string, KrakenRestTick>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTickers(symbols: assetName.SymbolName) );
+            RateLimiterPenality += 1000;
             return (double)mk.Data[assetName.SymbolName].LastTrade.Price;
         }
 
         public virtual KrakenTradesResult TradesHistory(AssetName assetName, DateTime dt)
         {
             var l = RetryHelper<KrakenTradesResult>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetRecentTrades(assetName.SymbolName, dt) );
+            RateLimiterPenality += 1000;
             return l.Data;
         }
 
@@ -77,11 +93,16 @@ namespace Cryptothune.Lib
         public virtual AssetName NormalizeSymbolName(string symbol)
         {
             var sym = RetryHelper<Dictionary<string, KrakenSymbol>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetSymbols(symbols: symbol) );
+            RateLimiterPenality += 1000;
             return new AssetName(sym.Data.First().Key, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
             //return new AssetName(sym.Data.First().Value.AlternateName, sym.Data.First().Value.BaseAsset, sym.Data.First().Value.QuoteAsset);
         }
 
-
+        /// <summary>
+        /// Return the prices history for q given asset
+        /// </summary>
+        /// <param name="assetName">An normalized asset built from a normalized symbol name.</param>
+        /// <returns></returns>
         public virtual IEnumerable<double> PricesHistory(AssetName assetName)
         {
             // To Do: Return here the Prices History on the specified symbol
@@ -92,6 +113,7 @@ namespace Cryptothune.Lib
         public virtual Trade LatestTrade(AssetName assetName)
         {
             var mk = RetryHelper<KrakenUserTradesPage>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeHistory() );
+            RateLimiterPenality += 2000;
             var rt = mk.Data.Trades.First( x => x.Value.Symbol==assetName.SymbolName );
             
             var trade = new Trade();
@@ -152,6 +174,7 @@ namespace Cryptothune.Lib
             if ( qty > 0)
             {
                 var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetName.SymbolName, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
+                RateLimiterPenality += 1000;
                 return order.Success;
             }
             
