@@ -11,9 +11,22 @@ namespace Cryptothune.Lib
         private Dictionary<string, decimal> _balances = new Dictionary<string, decimal>();
         private Dictionary<string, decimal> _balancesTrades = new Dictionary<string, decimal>();
 
+        private SQLiteConnection _fakeDB;
+
+        /// <summary>
+        /// ctor
+        /// </summary>
         public ExchangeFake()
         {
             _balances.Add( "ZEUR", 0 );
+
+            string cs = @"URI=file:ExchangeFake.db";
+            _fakeDB = new SQLiteConnection(cs);
+            _fakeDB.Open();
+
+            var cmd = new SQLiteCommand(_fakeDB);
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Assets (asset text PRIMARY KEY, price double, unique (asset))";
+            cmd.ExecuteNonQuery();
         }
 
         private double _money { get; set; }
@@ -21,17 +34,42 @@ namespace Cryptothune.Lib
 
         public override Dictionary<string, decimal> Balances()
         {
+            var cmd = new SQLiteCommand(_fakeDB);
+            cmd.CommandText = @"SELECT asset, price FROM Assets";
+            cmd.ExecuteNonQuery();
+
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            var t = rdr.GetValues();
             return _balances;
         }
 
 
         public override double Balance(string asset)
         {
+            var cmd = new SQLiteCommand(_fakeDB);
+            cmd.CommandText = @"SELECT price FROM Assets WHERE asset = '" + asset + "'";
+            cmd.ExecuteNonQuery();
+            using (SQLiteDataReader rdr = cmd.ExecuteReader())
+            {
+                if (rdr.HasRows)
+                {
+                    if (rdr.Read())
+                    {
+                        _money = rdr.GetDouble(0);
+                    }
+                }
+            }
             return _money;
         }
 
         public virtual double Deposit(double money)
         {
+            var cmd = new SQLiteCommand(_fakeDB);
+            cmd.CommandText = @"INSERT OR IGNORE INTO Assets (asset, price) VALUES ( 'ZEUR', " + money + ")";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = @"UPDATE Assets SET price = " + money + " WHERE asset = 'ZEUR' ";
+            cmd.ExecuteNonQuery();
+
             _money += money;
             _balances["ZEUR"] += (decimal)money;
             return _money;
@@ -51,6 +89,11 @@ namespace Cryptothune.Lib
             return new AssetName(symbol, baseName, quote);
         }
 
+        /// <summary>
+        /// Get the prices history for a given asset
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
         public override IEnumerable<double> PricesHistory(AssetName assetName)
         {
             var con = ExportTradesOnDB(assetName);

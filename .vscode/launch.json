@@ -18,7 +18,7 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp3.1/cryptothune.Cli.dll",
         "args": [
             "--sim"
         ],
@@ -31,7 +31,7 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp3.1/cryptothune.Cli.dll",
         "args": [],
         "cwd": "${workspaceFolder}/Output",
         "stopAtEntry": false,
@@ -42,7 +42,7 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp2.0/cryptothune.Cli.dll",
+        "program": "${workspaceFolder}/cryptothune.Cli/bin/Debug/netcoreapp3.1/cryptothune.Cli.dll",
         "args": [
             "--dry"
         ],

@@ -22,7 +22,7 @@ namespace Cryptothune.Lib
         private double _krakenFeeBuy = 0.18;
 
         private int _retryTimes = 4;
-        private TimeSpan _retryDelay = TimeSpan.FromSeconds(1);
+        private TimeSpan _retryDelay = TimeSpan.FromSeconds(3);
 
         private bool _privateAPI = false;
 
@@ -70,14 +70,14 @@ namespace Cryptothune.Lib
         public virtual double Balance(string asset = "ZEUR")
         {
             var bal = RetryHelper<KrakenTradeBalance>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeBalance(asset) );
-            RateLimiterPenality += 3000;
+            RateLimiterPenality += 6000;
             return (double)bal.Data.CombinedBalance;
         }
 
         public virtual double MarketPrice(AssetName assetName)
         {
             var mk = RetryHelper<Dictionary<string, KrakenRestTick>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTickers(symbols: assetName.SymbolName) );
-            RateLimiterPenality += 3000;
+            RateLimiterPenality += 6000;
             return (double)mk.Data[assetName.SymbolName].LastTrade.Price;
         }
 
@@ -153,9 +153,15 @@ namespace Cryptothune.Lib
             }
             var qty = amount / price;
 
-            _logger.Info("Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
-            var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
-            return order.Success;
+            if ( qty >= 30 )
+            {
+                _logger.Info("Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
+                var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetSymbol, OrderSide.Buy, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
+                RateLimiterPenality += 3000;
+                return order.Success;
+            }
+            
+            return false;
         }
 
         /// <summary>
@@ -179,6 +185,7 @@ namespace Cryptothune.Lib
             {
                 _logger.Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + (double)qty*price + " " + assetName.QuoteName );
                 var order = RetryHelper<KrakenPlacedOrder>.RetryOnException(_retryTimes, _retryDelay, () => kc.PlaceOrder(assetName.SymbolName, OrderSide.Sell, OrderType.Market, quantity: (decimal)qty, validateOnly: dry) );
+                RateLimiterPenality += 3000;
                 return order.Success;
             }
             
