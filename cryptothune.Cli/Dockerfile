@@ -1,7 +1,7 @@
-FROM microsoft/dotnet:3.1-runtime AS base
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1 AS base
 WORKDIR /app
 
-FROM microsoft/dotnet:3.1-sdk AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
 COPY ["cryptothune.Cli/cryptothune.Cli.csproj", "cryptothune.Cli/"]
 RUN dotnet restore "cryptothune.Cli/cryptothune.Cli.csproj"
