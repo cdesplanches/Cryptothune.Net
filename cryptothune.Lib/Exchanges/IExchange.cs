@@ -5,7 +5,7 @@ namespace Cryptothune.Lib
 {
     public interface IExchange
     {
-        AssetName NormalizeSymbolName(string symbol);
+        AssetSymbol NormalizeSymbolName(string symbol);
 
         double Fees(double whole, Trade.TOrderType oType);
 
@@ -13,14 +13,14 @@ namespace Cryptothune.Lib
 
         double Balance(string asset);
 
-        IEnumerable<double> PricesHistory(AssetName assetName);
+        IEnumerable<double> PricesHistory(AssetSymbol assetName);
 
-        double MarketPrice(AssetName assetName);
+        double MarketPrice(AssetSymbol assetName);
         
-        Trade LatestTrade(AssetName assetName);
+        Trade LatestTrade(AssetSymbol assetName);
 
-        bool Buy (AssetName assetName, double price, double qty = 100.0, bool dry = true);
-        bool Sell (AssetName assetName, double price, double qty = 100.0, bool dry = true);
+        bool Buy (AssetSymbol assetName, double price, double qty = 100.0, bool dry = true);
+        bool Sell (AssetSymbol assetName, double price, double qty = 100.0, bool dry = true);
         void PreventRateLimit();
     }
 }

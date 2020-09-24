@@ -8,15 +8,24 @@ using System.Drawing;
 
 namespace Cryptothune.Lib
 {
+    /// <summary>
+    /// The Bot class that apply strategy on a given crypto market exchange place
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BotThune<T> where T : IExchange, new()
     {
         private List<StrategyObject> _strategies = new List<StrategyObject>();
-
+        /// <summary>
+        /// ctor
+        /// </summary>
         public BotThune()
         {
             MarketExchange = new T();
         }
-
+        /// <summary>
+        /// return the market exchange place object
+        /// </summary>
+        /// <value>the market exchange place</value>
         public T MarketExchange { get; protected set; }
 
         /// <summary>
@@ -100,7 +109,9 @@ namespace Cryptothune.Lib
             pltMoney.XLabel("Time");
             pltMoney.SaveFig ("money.png");
         }
-
+        /// <summary>
+        /// Perform a real run
+        /// </summary>
         public void Run()
         {
             while (true)
@@ -129,8 +140,9 @@ namespace Cryptothune.Lib
             }
             
         }
-
-
+        /// <summary>
+        /// Perform a dry run
+        /// </summary>
         public void DryRun()
         {
             while (true)

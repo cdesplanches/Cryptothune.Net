@@ -4,7 +4,7 @@ namespace Cryptothune.Lib
 {
     public class StrategyObject
     {
-        public StrategyObject(IStrategy strategy, AssetName assetName, double percent)
+        public StrategyObject(IStrategy strategy, AssetSymbol assetName, double percent)
         {
             Strategy = strategy;
             AssetName = assetName;
@@ -12,7 +12,7 @@ namespace Cryptothune.Lib
         }
 
         public IStrategy Strategy { get; private set; }
-        public AssetName AssetName { get; private set; }
+        public AssetSymbol AssetName { get; private set; }
         public double Percentage { get; private set; }
 
     }

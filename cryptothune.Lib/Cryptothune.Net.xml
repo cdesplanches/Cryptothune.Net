@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>cryptothune.Lib</name>
+    </assembly>
+    <members>
+        <member name="T:Cryptothune.Lib.BotThune`1">
+            <summary>
+            The Bot class that apply strategy on a given crypto market exchange place
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Cryptothune.Lib.BotThune`1.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="P:Cryptothune.Lib.BotThune`1.MarketExchange">
+            <summary>
+            return the market exchange place object
+            </summary>
+            <value>the market exchange place</value>
+        </member>
+        <member name="M:Cryptothune.Lib.BotThune`1.AddStrategy(Cryptothune.Lib.IStrategy,System.String,System.Double)">
+            <summary>
+            Add a trading strategy to a specified symbol.
+            </summary>
+            <param name="strategy">the strategy to apply on the selected symbol. <see cref="T:Cryptothune.Lib.IStrategy"/> </param>
+            <param name="symbol">Symbol ex: "XRPEUR" </param>
+            <param name="percent">Percentage of the portfolio to allocate to this strategy</param>
+        </member>
+        <member name="M:Cryptothune.Lib.BotThune`1.Sim">
+            <summary>
+            Launch a simulation of trades on the current exchange.
+            It will:
+                1. Create or update the complete trading history on all symbols that strategies are responsible of
+                2. Execute the strategy of Buy/Sell, starting from the beginnig of the symbol history life
+                3. Export a picture of the Buy/Sell history (graph)
+                4. Export a picture of the evolution of the fiat balance.
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.BotThune`1.Run">
+            <summary>
+            Perform a real run
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.BotThune`1.DryRun">
+            <summary>
+            Perform a dry run
+            </summary>
+        </member>
+        <member name="T:Cryptothune.Lib.AssetSymbol">
+            <summary>
+            Define what is a symbol
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.AssetSymbol.#ctor(System.String,System.String,System.String)">
+            <summary>
+            ctor
+            </summary>
+            <param name="symbolName"></param>
+            <param name="baseName"></param>
+            <param name="quoteName"></param>
+        </member>
+        <member name="P:Cryptothune.Lib.AssetSymbol.QuoteName">
+            <summary>
+            The Quote name of a symbol (ex: ZEUR)
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.AssetSymbol.BaseName">
+            <summary>
+            The base name of the symbol (ex: XBT)
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.AssetSymbol.SymbolName">
+            <summary>
+            The complete symbol name. (ex: XXBTEUR)
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.AssetSymbol.OrderMin">
+            <summary>
+            The minimum order authorized for this asset
+            </summary>
+            <value></value>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Balances">
+            <summary>
+            Get the total balances of the virtual portfolio
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Balance(System.String)">
+            <summary>
+            Get the current available balance (from the DB)
+            </summary>
+            <param name="asset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Deposit(System.Double)">
+            <summary>
+            Fake a deposit order (update the entry on the sqlite DB)
+            </summary>
+            <param name="money"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Name">
+            <summary>
+            The name of this Fake market exchange
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.NormalizeSymbolName(System.String)">
+            <summary>
+            Return the normalized name for a given symbol
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            Get the prices history for a given asset
+            </summary>
+            <param name="assetName">The nqme of the asset to get the price history</param>
+            <returns>list of prices</returns>
+        </member>
+        <member name="T:Cryptothune.Lib.ExchangeKraken">
+            <summary>
+            Kraken market object
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="P:Cryptothune.Lib.ExchangeKraken.RateLimiterPenality">
+            <summary>
+            The rate limiter penality (in ms)
+            </summary>
+            <value>The value in ms of the penality of rate limiter </value>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.PreventRateLimit">
+            <summary>
+            Stop the execution on the process in order to respect the rate limiter.
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Balances">
+            <summary>
+            Get the current balance of all assets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Balance(System.String)">
+            <summary>
+            Get the fiat balance (for a given currency)
+            </summary>
+            <param name="asset">the fiat currency (ex: ZEUR, or ZUSD)</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.MarketPrice(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            The current price for a given asset
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.TradesHistory(Cryptothune.Lib.AssetSymbol,System.DateTime)">
+            <summary>
+            The recent trades history for a given symbol
+            </summary>
+            <param name="assetName"></param>
+            <param name="dt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.NormalizeSymbolName(System.String)">
+            <summary>
+            Normalize a given symbol name, like "XRPEUR" to the equivalent for Kraken Symbol.
+            </summary>
+            <param name="symbol">The symbol name (ex: "XRPEUR")</param>
+            <returns>A generic Asset name object. </returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            Return the prices history for a given asset
+            </summary>
+            <param name="assetName">An normalized asset built from a normalized symbol name.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            Get the latest trades done for a given asset name
+            </summary>
+            <param name="assetName">The asset name to retreive the trade history on.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Place a "Buy" order on the Kraken exchange market.
+            </summary>
+            <param name="assetName"></param>
+            <param name="price"></param>
+            <param name="ratio"></param>
+            <param name="dry"></param>
+            <returns>true if the order is properly placed, false otherwise.</returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Place a "Sell" order on the Kraken exchange market.
+            </summary>
+            <param name="assetName">The crypto asset to sell for a given currency. ex: "BTCEUR" ></param>
+            <param name="price">The wanted price (on the currency).</param>
+            <param name="ratio">the pourcentage to qpply on the transaction.</param>
+            <param name="dry">Is it for real or not?</param>
+            <returns>true if the order was properly placed, false otherwise.</returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Name">
+            <summary>
+            The name of the exchqnge market
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Fees(System.Double,Cryptothune.Lib.Trade.TOrderType)">
+            <summary>
+            Return the fees for q Buy or Sell transaction.
+            </summary>
+            <param name="whole">The value to apply the fee on</param>
+            <param name="oType">Buy or Sell order.</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

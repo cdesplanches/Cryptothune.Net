@@ -31,7 +31,10 @@ namespace Cryptothune.Lib
 
         private double _money { get; set; }
 
-
+        /// <summary>
+        /// Get the total balances of the virtual portfolio
+        /// </summary>
+        /// <returns></returns>
         public override Dictionary<string, decimal> Balances()
         {
             var cmd = new SQLiteCommand(_fakeDB);
@@ -42,8 +45,11 @@ namespace Cryptothune.Lib
             var t = rdr.GetValues();
             return _balances;
         }
-
-
+        /// <summary>
+        /// Get the current available balance (from the DB)
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns></returns>
         public override double Balance(string asset)
         {
             var cmd = new SQLiteCommand(_fakeDB);
@@ -61,7 +67,11 @@ namespace Cryptothune.Lib
             }
             return _money;
         }
-
+        /// <summary>
+        /// Fake a deposit order (update the entry on the sqlite DB)
+        /// </summary>
+        /// <param name="money"></param>
+        /// <returns></returns>
         public virtual double Deposit(double money)
         {
             var cmd = new SQLiteCommand(_fakeDB);
@@ -74,27 +84,34 @@ namespace Cryptothune.Lib
             _balances["ZEUR"] += (decimal)money;
             return _money;
         }
-        
+        /// <summary>
+        /// The name of this Fake market exchange
+        /// </summary>
+        /// <returns></returns>
         public override string Name()
         {
             return "Fake";
         }
-
-        public override AssetName NormalizeSymbolName(string symbol)
+        /// <summary>
+        /// Return the normalized name for a given symbol
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public override AssetSymbol NormalizeSymbolName(string symbol)
         {
             var baseName = symbol.Substring(0, 3);
             var quote = "Z" + symbol.Substring(symbol.Length-3, 3);
 
             _balances[symbol] = 0;
-            return new AssetName(symbol, baseName, quote);
+            return new AssetSymbol(symbol, baseName, quote);
         }
 
         /// <summary>
         /// Get the prices history for a given asset
         /// </summary>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
-        public override IEnumerable<double> PricesHistory(AssetName assetName)
+        /// <param name="assetName">The nqme of the asset to get the price history</param>
+        /// <returns>list of prices</returns>
+        public override IEnumerable<double> PricesHistory(AssetSymbol assetName)
         {
             var con = ExportTradesOnDB(assetName);
 
@@ -109,7 +126,7 @@ namespace Cryptothune.Lib
         }
 
 
-        public SQLiteConnection ExportTradesOnDB(AssetName assetName)
+        public SQLiteConnection ExportTradesOnDB(AssetSymbol assetName)
         {
             string cs = @"URI=file:" + assetName.SymbolName + ".db";
             var con = new SQLiteConnection(cs);
@@ -178,14 +195,13 @@ namespace Cryptothune.Lib
                 }
 
                 PreventRateLimit(); // To avoid a rate limit exception on Kraken API public calls.
-//                Thread.Sleep(3000); 
             }
 
             return con;
         }
 
 
-        public override bool Buy(AssetName assetName, double marketPrice, double ratio, bool dry)
+        public override bool Buy(AssetSymbol assetName, double marketPrice, double ratio, bool dry)
         {
             var totalBalance = Balance(assetName.QuoteName);
             var qty = (totalBalance*ratio)/100.0;
@@ -203,7 +219,7 @@ namespace Cryptothune.Lib
         }
 
 
-        public override bool Sell(AssetName assetName, double marketPrice, double ratio, bool dry)
+        public override bool Sell(AssetSymbol assetName, double marketPrice, double ratio, bool dry)
         {
             if ( !_balancesTrades.ContainsKey(assetName.SymbolName) )
             {
