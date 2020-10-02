@@ -86,12 +86,48 @@
             </summary>
             <value></value>
         </member>
+        <member name="T:Cryptothune.Lib.ExchangeFake">
+            <summary>
+            A 'fake' exchqnge market, built on top of the kraken public exchange market.
+            </summary>
+        </member>
+        <member name="P:Cryptothune.Lib.ExchangeFake._money">
+            <summary>
+            The current amount of money on the 'fake' portfolio
+            </summary>
+            <value></value>
+        </member>
+        <member name="F:Cryptothune.Lib.ExchangeFake._fakeDB">
+            <summary>
+            Internal Database
+            </summary>
+        </member>
+        <member name="F:Cryptothune.Lib.ExchangeFake._priceHistory">
+            <summary>
+            Store the market price history
+            </summary>
+        </member>
+        <member name="F:Cryptothune.Lib.ExchangeFake._tradeHistory">
+            <summary>
+            the list of trades.
+            </summary>
+            <typeparam name="Trade"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="F:Cryptothune.Lib.ExchangeFake._assetPortfolio">
+            <summary>
+            
+            </summary>
+            <typeparam name="string"></typeparam>
+            <typeparam name="double"></typeparam>
+            <returns></returns>
+        </member>
         <member name="M:Cryptothune.Lib.ExchangeFake.#ctor">
             <summary>
             ctor
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Balances">
+        <member name="M:Cryptothune.Lib.ExchangeFake.Balances(System.Nullable{System.DateTime})">
             <summary>
             Get the total balances of the virtual portfolio
             </summary>
@@ -131,9 +167,61 @@
             <param name="assetName">The nqme of the asset to get the price history</param>
             <returns>list of prices</returns>
         </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.ExportTradesOnDB(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            Get the price history for a given asset and store it into a sqlite DB.
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            Get the latest transaction performed for a given asset
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+            <summary>
+            Place a 'fake' buy order
+            </summary>
+            <param name="assetName"></param>
+            <param name="price"></param>
+            <param name="ratio"></param>
+            <param name="dt"></param>
+            <param name="dry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+            <summary>
+            Place a 'fake' sell order
+            </summary>
+            <param name="assetName"></param>
+            <param name="marketPrice"></param>
+            <param name="ratio"></param>
+            <param name="dt"></param>
+            <param name="dry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.PlaceOrder(Cryptothune.Lib.AssetSymbol,Cryptothune.Lib.Trade.TOrderType,System.DateTime,System.Double,System.Double)">
+            <summary>
+            Place a 'fake' order on the 'fake' exchange market
+            </summary>
+            <param name="assetName"></param>
+            <param name="orderType"></param>
+            <param name="dt"></param>
+            <param name="price"></param>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
         <member name="T:Cryptothune.Lib.ExchangeKraken">
             <summary>
             Kraken market object
+            </summary>
+        </member>
+        <member name="F:Cryptothune.Lib.ExchangeKraken.kc">
+            <summary>
+            The internal Kraken client (from Kraken.net)
             </summary>
         </member>
         <member name="M:Cryptothune.Lib.ExchangeKraken.#ctor">
@@ -152,7 +240,12 @@
             Stop the execution on the process in order to respect the rate limiter.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Balances">
+        <member name="M:Cryptothune.Lib.ExchangeKraken.ResetRateLimitCounter">
+            <summary>
+            Reset the rate limit counter
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Balances(System.Nullable{System.DateTime})">
             <summary>
             Get the current balance of all assets
             </summary>
@@ -201,23 +294,25 @@
             <param name="assetName">The asset name to retreive the trade history on.</param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Boolean)">
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a "Buy" order on the Kraken exchange market.
             </summary>
             <param name="assetName"></param>
             <param name="price"></param>
             <param name="ratio"></param>
+            <param name="dt"></param>
             <param name="dry"></param>
             <returns>true if the order is properly placed, false otherwise.</returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Boolean)">
+        <member name="M:Cryptothune.Lib.ExchangeKraken.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a "Sell" order on the Kraken exchange market.
             </summary>
             <param name="assetName">The crypto asset to sell for a given currency. ex: "BTCEUR" ></param>
             <param name="price">The wanted price (on the currency).</param>
             <param name="ratio">the pourcentage to qpply on the transaction.</param>
+            <param name="dt">When schedule that order.</param>
             <param name="dry">Is it for real or not?</param>
             <returns>true if the order was properly placed, false otherwise.</returns>
         </member>
@@ -234,6 +329,137 @@
             <param name="whole">The value to apply the fee on</param>
             <param name="oType">Buy or Sell order.</param>
             <returns></returns>
+        </member>
+        <member name="T:Cryptothune.Lib.IExchange">
+            <summary>
+            Interface for an exchange market
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.NormalizeSymbolName(System.String)">
+            <summary>
+            Normalize a symbol asset
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.Fees(System.Double,Cryptothune.Lib.Trade.TOrderType)">
+            <summary>
+            Fees for a transaction
+            </summary>
+            <param name="whole"></param>
+            <param name="oType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.Balances(System.Nullable{System.DateTime})">
+            <summary>
+            The complete balances
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.Balance(System.String)">
+            <summary>
+            The balance for a given asset
+            </summary>
+            <param name="asset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            The price history
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.MarketPrice(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            the current market price of a given asset
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+            <summary>
+            The last tarde transaction
+            </summary>
+            <param name="assetName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+            <summary>
+            Place a buy order
+            </summary>
+            <param name="assetName"></param>
+            <param name="price"></param>
+            <param name="qty"></param>
+            <param name="dt"></param>
+            <param name="dry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+            <summary>
+            Place a sell order
+            </summary>
+            <param name="assetName"></param>
+            <param name="price"></param>
+            <param name="qty"></param>
+            <param name="dt"></param>
+            <param name="dry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.PreventRateLimit">
+            <summary>
+            Pause the execution according to the current rate limiter counter.
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.IExchange.ResetRateLimitCounter">
+            <summary>
+            Reset the rate limit counter
+            </summary>
+        </member>
+        <member name="T:Cryptothune.Lib.Trade">
+            <summary>
+            A trade object
+            </summary>
+        </member>
+        <member name="T:Cryptothune.Lib.Trade.TOrderType">
+            <summary>
+            Buy, or Sell
+            </summary>
+        </member>
+        <member name="M:Cryptothune.Lib.Trade.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="P:Cryptothune.Lib.Trade.Timestamp">
+            <summary>
+            The date time when the trade occur
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.Trade.Quantity">
+            <summary>
+            the quantity of asset trade.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.Trade.Asset">
+            <summary>
+            The trade asset
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.Trade.RefPrice">
+            <summary>
+            The reference price
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Cryptothune.Lib.Trade.OrderType">
+            <summary>
+            Buy or Sell?
+            </summary>
+            <value></value>
         </member>
     </members>
 </doc>

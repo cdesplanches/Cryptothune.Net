@@ -19,6 +19,9 @@ namespace Cryptothune.Lib
     /// </summary>
     public class ExchangeKraken : IExchange
     {
+        /// <summary>
+        /// The internal Kraken client (from Kraken.net)
+        /// </summary>
         private KrakenClient kc = null;
         private double _krakenFeeSell = 0.26;
         private double _krakenFeeBuy = 0.18;
@@ -57,7 +60,7 @@ namespace Cryptothune.Lib
         /// The rate limiter penality (in ms)
         /// </summary>
         /// <value>The value in ms of the penality of rate limiter </value>
-        public virtual int RateLimiterPenality { get; private set; }
+        public virtual int RateLimiterPenality { get; protected set; }
         /// <summary>
         /// Stop the execution on the process in order to respect the rate limiter.
         /// </summary>
@@ -67,10 +70,17 @@ namespace Cryptothune.Lib
             RateLimiterPenality = 0;
         }
         /// <summary>
+        /// Reset the rate limit counter
+        /// </summary>
+        public virtual void ResetRateLimitCounter()
+        {
+            RateLimiterPenality = 0;
+        }
+        /// <summary>
         /// Get the current balance of all assets
         /// </summary>
         /// <returns></returns>
-        public virtual Dictionary<string, decimal> Balances()
+        public virtual Dictionary<string, decimal> Balances(DateTime? dt = null)
         {
             var bal = RetryHelper<Dictionary<string, decimal>>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetBalances() );
             RateLimiterPenality += 6000;
@@ -128,10 +138,10 @@ namespace Cryptothune.Lib
         /// </summary>
         /// <param name="assetName">An normalized asset built from a normalized symbol name.</param>
         /// <returns></returns>
-        public virtual IEnumerable<double> PricesHistory(AssetSymbol assetName)
+        public virtual Dictionary<double, double> PricesHistory(AssetSymbol assetName)
         {
             // To Do: Return here the Prices History on the specified symbol
-            List<double> db = new List<double>();
+            var db = new Dictionary<double, double>();
             return db;
         }
         /// <summary>
@@ -157,15 +167,17 @@ namespace Cryptothune.Lib
         /// <param name="assetName"></param>
         /// <param name="price"></param>
         /// <param name="ratio"></param>
+        /// <param name="dt"></param>
         /// <param name="dry"></param>
         /// <returns>true if the order is properly placed, false otherwise.</returns>
-        public virtual bool Buy(AssetSymbol assetName, double price, double ratio, bool dry)
+        public virtual bool Buy(AssetSymbol assetName, double price, double ratio, DateTime? dt, bool dry)
         {
             if ( (ratio == 0) || (_privateAPI == false) )
             {
                 return false;
             }
-
+            var dd = dt ?? DateTime.Now; 
+            
             var fiatSymbol = assetName.QuoteName;                   // "XRPEUR" => "ZEUR"
             var assetSymbol = assetName.SymbolName;
             var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
@@ -194,14 +206,16 @@ namespace Cryptothune.Lib
         /// <param name="assetName">The crypto asset to sell for a given currency. ex: "BTCEUR" ></param>
         /// <param name="price">The wanted price (on the currency).</param>
         /// <param name="ratio">the pourcentage to qpply on the transaction.</param>
+        /// <param name="dt">When schedule that order.</param>
         /// <param name="dry">Is it for real or not?</param>
         /// <returns>true if the order was properly placed, false otherwise.</returns>
-        public virtual bool Sell(AssetSymbol assetName, double price, double ratio, bool dry)
+        public virtual bool Sell(AssetSymbol assetName, double price, double ratio, DateTime? dt, bool dry)
         {
             if ( _privateAPI == false )
             {
                 return false;
             }
+            var dd = dt ?? DateTime.Now; 
 
             var bal = Balances();
             var qty = bal[assetName.BaseName];

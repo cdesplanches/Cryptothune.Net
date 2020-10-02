@@ -6,44 +6,105 @@ using System.Collections.Generic;
 
 namespace Cryptothune.Lib
 {
+    /// <summary>
+    /// A 'fake' exchqnge market, built on top of the kraken public exchange market.
+    /// </summary>
     public class ExchangeFake : ExchangeKraken
     {
-        private Dictionary<string, decimal> _balances = new Dictionary<string, decimal>();
-        private Dictionary<string, decimal> _balancesTrades = new Dictionary<string, decimal>();
-
+        /// <summary>
+        /// The current amount of money on the 'fake' portfolio
+        /// </summary>
+        /// <value></value>
+        private double _money { get; set; }
+        /// <summary>
+        /// Internal Database
+        /// </summary>
         private SQLiteConnection _fakeDB;
-
+        /// <summary>
+        /// Store the market price history
+        /// </summary>
+        private Dictionary<string, Dictionary<double, double>> _priceHistory = new Dictionary<string, Dictionary<double, double>>();
+        /// <summary>
+        /// the list of trades.
+        /// </summary>
+        /// <typeparam name="Trade"></typeparam>
+        /// <returns></returns>
+        private List<Trade> _tradeHistory = new List<Trade>();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="string"></typeparam>
+        /// <typeparam name="double"></typeparam>
+        /// <returns></returns>
+        private Dictionary<string, double> _assetPortfolio = new Dictionary<string, double>();
         /// <summary>
         /// ctor
         /// </summary>
         public ExchangeFake()
         {
-            _balances.Add( "ZEUR", 0 );
-
             string cs = @"URI=file:ExchangeFake.db";
             _fakeDB = new SQLiteConnection(cs);
             _fakeDB.Open();
 
             var cmd = new SQLiteCommand(_fakeDB);
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Assets (asset text PRIMARY KEY, price double, unique (asset))";
+            cmd.CommandText = @"DROP TABLE IF EXISTS Assets";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Assets (asset text PRIMARY KEY, balance double, unique (asset))";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = @"DROP TABLE IF EXISTS Trades";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS 'Trades' (my_id integer PRIMARY KEY, timestamp integer, symbol text, order_type text, price double, amount double, unique (timestamp,symbol))";
             cmd.ExecuteNonQuery();
         }
-
-        private double _money { get; set; }
-
         /// <summary>
         /// Get the total balances of the virtual portfolio
         /// </summary>
         /// <returns></returns>
-        public override Dictionary<string, decimal> Balances()
+        public override Dictionary<string, decimal> Balances(DateTime? dt = null)
         {
-            var cmd = new SQLiteCommand(_fakeDB);
-            cmd.CommandText = @"SELECT asset, price FROM Assets";
-            cmd.ExecuteNonQuery();
+            var dd = dt ?? DateTime.Now;
 
-            SQLiteDataReader rdr = cmd.ExecuteReader();
-            var t = rdr.GetValues();
-            return _balances;
+            _money = 0;
+            var oa = dd.ToOADate();
+            var dic = new Dictionary<string, decimal>();
+            foreach ( var ass in _assetPortfolio )
+            {
+                double bal = 0;
+                if ( _priceHistory.ContainsKey(ass.Key) )
+                {
+                    var keys = _priceHistory[ass.Key].Keys;
+                    if (  _priceHistory[ass.Key].Keys.First() <= oa )
+                    {
+                        var nearest = oa - keys.Where(k => k <= oa)
+                                                .Min(k => oa - k);
+                        var prc = _priceHistory[ass.Key][nearest];
+                        bal = prc * ass.Value;
+                    }
+                    else
+                        bal = ass.Value;  
+/*
+                    var prc = from pr in _priceHistory[ass.Key]
+                        where pr.Key == oa
+                        select pr.Value;
+                        
+                    if (prc != null )
+                    {
+                        bal = prc * ass.Value;
+                    }
+                    else
+                    {
+                        bal = ass.Value;
+                    }
+*/                    
+                }
+                else
+                    bal = ass.Value;
+
+                _money += bal;                
+                dic.Add(ass.Key, (decimal)bal);
+            }
+
+            return dic;
         }
         /// <summary>
         /// Get the current available balance (from the DB)
@@ -52,20 +113,7 @@ namespace Cryptothune.Lib
         /// <returns></returns>
         public override double Balance(string asset)
         {
-            var cmd = new SQLiteCommand(_fakeDB);
-            cmd.CommandText = @"SELECT price FROM Assets WHERE asset = '" + asset + "'";
-            cmd.ExecuteNonQuery();
-            using (SQLiteDataReader rdr = cmd.ExecuteReader())
-            {
-                if (rdr.HasRows)
-                {
-                    if (rdr.Read())
-                    {
-                        _money = rdr.GetDouble(0);
-                    }
-                }
-            }
-            return _money;
+            return _assetPortfolio[asset];
         }
         /// <summary>
         /// Fake a deposit order (update the entry on the sqlite DB)
@@ -74,14 +122,8 @@ namespace Cryptothune.Lib
         /// <returns></returns>
         public virtual double Deposit(double money)
         {
-            var cmd = new SQLiteCommand(_fakeDB);
-            cmd.CommandText = @"INSERT OR IGNORE INTO Assets (asset, price) VALUES ( 'ZEUR', " + money + ")";
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = @"UPDATE Assets SET price = " + money + " WHERE asset = 'ZEUR' ";
-            cmd.ExecuteNonQuery();
-
             _money += money;
-            _balances["ZEUR"] += (decimal)money;
+            _assetPortfolio["ZEUR"] = _money;
             return _money;
         }
         /// <summary>
@@ -102,30 +144,48 @@ namespace Cryptothune.Lib
             var baseName = symbol.Substring(0, 3);
             var quote = "Z" + symbol.Substring(symbol.Length-3, 3);
 
-            _balances[symbol] = 0;
+            _assetPortfolio.Add(baseName, 0);
+
             return new AssetSymbol(symbol, baseName, quote);
         }
-
         /// <summary>
         /// Get the prices history for a given asset
         /// </summary>
         /// <param name="assetName">The nqme of the asset to get the price history</param>
         /// <returns>list of prices</returns>
-        public override IEnumerable<double> PricesHistory(AssetSymbol assetName)
+        public override Dictionary<double, double> PricesHistory(AssetSymbol assetName)
         {
             var con = ExportTradesOnDB(assetName);
 
             // Get all prices
             var cmd = new SQLiteCommand(con);
-            cmd.CommandText = @"SELECT price FROM history";
+            cmd.CommandText = @"SELECT timestamp, price FROM history ORDER BY timestamp";
             cmd.ExecuteNonQuery();
 
-            SQLiteDataReader rdr = cmd.ExecuteReader();
-            var prc = rdr.Cast<IDataRecord>().Select(r => (double)r["price"]).ToArray();
-            return prc;
+            using SQLiteDataReader rdr = cmd.ExecuteReader();
+            var _dict = new Dictionary<double, double>();
+            while (rdr.Read())
+            {
+                var timestamp = (Int64)rdr["timestamp"];
+                var dt = new DateTime(timestamp);
+                var oa = (double)dt.ToOADate();
+
+                var r = (double)rdr["price"];
+
+                if ( _dict.ContainsKey(oa) )
+                    _dict[oa] = r;
+                else
+                    _dict.Add(oa, r);
+
+            }
+            _priceHistory.Add(assetName.BaseName, _dict);
+            return _dict;
         }
-
-
+        /// <summary>
+        /// Get the price history for a given asset and store it into a sqlite DB.
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
         public SQLiteConnection ExportTradesOnDB(AssetSymbol assetName)
         {
             string cs = @"URI=file:" + assetName.SymbolName + ".db";
@@ -199,46 +259,140 @@ namespace Cryptothune.Lib
 
             return con;
         }
-
-
-        public override bool Buy(AssetSymbol assetName, double marketPrice, double ratio, bool dry)
+        /// <summary>
+        /// Get the latest transaction performed for a given asset
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        public override Trade LatestTrade(AssetSymbol assetName)
         {
-            var totalBalance = Balance(assetName.QuoteName);
-            var qty = (totalBalance*ratio)/100.0;
-            var fees = Fees(qty, Trade.TOrderType.Buy);
-            var real = (qty + fees);
-            _balances[assetName.SymbolName] = (decimal)(real/marketPrice);
-            _balancesTrades[assetName.SymbolName] = (decimal)marketPrice;
-            _balances[assetName.QuoteName] -= (decimal)real;
-            if (_balances[assetName.QuoteName] < 0)
-                _balances[assetName.QuoteName] = 0;
-
-            _money -= fees;
-            NLog.LogManager.GetCurrentClassLogger().Info("Buy");
-            return true;
+            if ( _tradeHistory.Count == 0 )
+            {
+                var tr = new Trade();
+                tr.Asset = assetName;
+                return tr;
+            }
+            var hist = from h in _tradeHistory
+                        where h.Asset.SymbolName == assetName.SymbolName
+                        orderby h.Timestamp descending
+                        select h;
+            RateLimiterPenality += 6000;
+            if ( hist.Count() == 0 )
+            {
+                var tr = new Trade();
+                tr.Asset = assetName;
+                return tr; 
+            }
+                
+            return hist.First();
         }
-
-
-        public override bool Sell(AssetSymbol assetName, double marketPrice, double ratio, bool dry)
+        /// <summary>
+        /// Place a 'fake' buy order
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <param name="price"></param>
+        /// <param name="ratio"></param>
+        /// <param name="dt"></param>
+        /// <param name="dry"></param>
+        /// <returns></returns>
+        public override bool Buy(AssetSymbol assetName, double price, double ratio, DateTime? dt, bool dry)
         {
-            if ( !_balancesTrades.ContainsKey(assetName.SymbolName) )
+            if ( ratio == 0 )
             {
                 return false;
             }
-            var totalBalance = Balance(assetName.QuoteName);
-            var qty = (double)_balances[assetName.SymbolName]*marketPrice;
-            var prevqty = _balances[assetName.SymbolName]*_balancesTrades[assetName.SymbolName];
-            var fees = Fees(qty, Trade.TOrderType.Sell);
-            var real = (qty - fees);
-           
-            _balances[assetName.SymbolName] = 0;
-            _balancesTrades[assetName.SymbolName] = (decimal)marketPrice;
-            _balances[assetName.QuoteName] += (decimal)real;
-            
-            var gain = real-(double)prevqty;
-            _money += gain;
+            var dd = dt ?? DateTime.Now; 
 
-            NLog.LogManager.GetCurrentClassLogger().Info("Sell");
+            var fiatSymbol = assetName.QuoteName;                   // "XRPEUR" => "ZEUR"
+            var assetSymbol = assetName.SymbolName;
+            var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
+            var amount = (totalBalance*ratio)/100.0;                // Percentage of this total balance that can be used to p
+            var bal = Balances(dd);
+            var availBalance = (double)bal[fiatSymbol];             // Available money for trading.
+            if ( amount > availBalance)
+            {
+                amount = availBalance;
+            }
+
+            var qty = amount / price;
+            if ( qty >= assetName.OrderMin )
+            {
+                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
+                var success = PlaceOrder(assetName, Trade.TOrderType.Buy, dd, price, qty);
+                RateLimiterPenality += 3000;
+                return success;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Place a 'fake' sell order
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <param name="marketPrice"></param>
+        /// <param name="ratio"></param>
+        /// <param name="dt"></param>
+        /// <param name="dry"></param>
+        /// <returns></returns>
+        public override bool Sell(AssetSymbol assetName, double marketPrice, double ratio, DateTime? dt, bool dry)
+        {
+            var dd = dt ?? DateTime.Now; 
+
+            var bal = Balances(dd);
+            var qty = bal[assetName.BaseName];
+            if ( qty > 0)
+            {
+                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + qty + " - Price:" + marketPrice + " - Total: " + (double)qty/marketPrice + " " + assetName.QuoteName );
+                var success = PlaceOrder(assetName, Trade.TOrderType.Sell, dd, marketPrice, (double)qty);
+                RateLimiterPenality += 3000;
+                return success;
+            }
+            
+            return false;
+        }
+        /// <summary>
+        /// Place a 'fake' order on the 'fake' exchange market
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <param name="orderType"></param>
+        /// <param name="dt"></param>
+        /// <param name="price"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        protected virtual bool PlaceOrder ( AssetSymbol assetName, Trade.TOrderType orderType, DateTime dt, double price, double amount )
+        {
+            var t = new Trade();
+            t.Timestamp = dt;
+            t.RefPrice = price;
+            t.Quantity = amount;
+            t.OrderType = orderType;
+            t.Asset = assetName;
+            _tradeHistory.Add(t);
+
+            var bal = Balances(dt);
+            var balance = bal[assetName.BaseName];
+
+            if ( orderType == Trade.TOrderType.Buy )
+            {
+                var fees = Fees((price*amount), orderType);
+                decimal total = (decimal)((price*amount)-fees);
+
+                balance += (decimal)amount;
+                _assetPortfolio[assetName.QuoteName] -= (double)total;
+            }
+            else
+            {
+                var fees = Fees((amount/price), orderType);
+                decimal total = (decimal)((amount/price)-fees);
+
+                balance -= (decimal)amount;
+                _assetPortfolio[assetName.QuoteName] += (double)total;
+            }
+
+            
+            _assetPortfolio[assetName.BaseName] = (double)balance;
+
+
             return true;
         }
     }

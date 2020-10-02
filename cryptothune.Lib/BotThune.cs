@@ -52,56 +52,121 @@ namespace Cryptothune.Lib
         {
             NLog.LogManager.GetCurrentClassLogger().Info("Start simulate Buy/Sell trades");
 
-            var pltMoney = new ScottPlot.Plot(2048, 1024);
-            int cptOp = 0;
-           
+            DateTime dt = DateTime.Now;
+
+            var marketPrices = new List<ValueTuple<double, string, double>>();
+            var plt = new Dictionary<string, ScottPlot.Plot>();
             foreach ( var stratDef in _strategies )
             {
                 var symbol = stratDef.AssetName;
                 var strategy = stratDef.Strategy;
-                var prices = MarketExchange.PricesHistory(symbol).ToArray();
+                var prices = MarketExchange.PricesHistory(symbol);
 
-                var plt = new ScottPlot.Plot(2048, 1024);
-                plt.PlotSignal(prices);
+                var plot = new ScottPlot.Plot(2048, 1024);
+                plot.Ticks(dateTimeX: true);
+                plot.PlotSignalXY(prices.Keys.ToArray(), prices.Values.ToArray());
+                plot.Title( symbol.SymbolName + " with " + strategy.Name() );
+                plot.YLabel("Value (Euro))");
+                plot.XLabel("Time" );
+                plt.Add(symbol.SymbolName, plot);
 
-
-                int index = 0;
-                var prevAction = Trade.TOrderType.Sell;
-                double refPrice = 0.0;
-              
-                foreach (var price in prices)
+                foreach ( var price in prices )
                 {
-                    if ( strategy.Decide(price, refPrice, prevAction) && (index>10) )    // Skip the first 10 transactions
+                    marketPrices.Add( new ValueTuple<double, string, double>(price.Key, symbol.BaseName, price.Value) );
+                }
+            }
+            marketPrices.Sort();
+           
+            var pltMoney = new ScottPlot.Plot(2048, 1024);
+            pltMoney.Ticks(dateTimeX: true);
+            int cptOp = 0;           
+            
+            foreach ( var marketEntry in marketPrices )
+            {
+                dt = DateTime.FromOADate(marketEntry.Item1);
+                foreach ( var stratDef in _strategies )
+                {
+                    var assetName = stratDef.AssetName;
+                    if ( assetName.BaseName == marketEntry.Item2 )
                     {
-                        if (prevAction == Trade.TOrderType.Buy)
+                        var strategy = stratDef.Strategy;
+                        var marketPrice = marketEntry.Item3;
+                        var prevTrade = MarketExchange.LatestTrade(assetName);
+                        if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
                         {
-                            plt.PlotPoint((double)index, price, color: Color.Red );
-                            pltMoney.PlotPoint((double)index, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
-
-                            refPrice = price;
-                            MarketExchange.Sell(symbol, price, stratDef.Percentage, false);
-                            ++cptOp;
-                            prevAction = Trade.TOrderType.Sell; 
-                        }
-                        else
-                        {
-                            plt.PlotPoint((double)index, price, color: Color.Green );
-                            pltMoney.PlotPoint((double)index, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
-
-                            refPrice = price;
-                            MarketExchange.Buy(symbol, price, stratDef.Percentage, false);
-                            ++cptOp;
-                            prevAction = Trade.TOrderType.Buy;
+                            if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                            {
+                                plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
+                                MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false);
+                            }
+                            else
+                            {
+                                plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
+                                MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false);
+                            }
                         }
                     }
                     
-                    ++index;
                 }
+            }
+            pltMoney.Title( "Your Portfolio" );
+            pltMoney.YLabel("Cash (Euro)) =" + MarketExchange.Balance("ZEUR") + " EUR & Nb Op = " + cptOp);
+            pltMoney.XLabel("Time");
+            pltMoney.SaveFig ("money.png");
 
-                plt.Title( symbol.SymbolName + " with " + strategy.Name() );
-                plt.YLabel("Value (Euro))");
-                plt.XLabel("Time" );
-                plt.SaveFig(symbol.SymbolName + ".png" );
+            foreach ( var ppp in plt )
+            {
+                ppp.Value.SaveFig(ppp.Key + ".png" );
+            }
+        }
+
+
+/*
+                    var prices = MarketExchange.PricesHistory(symbol);
+                    var plt = new ScottPlot.Plot(2048, 1024);
+                    plt.Ticks(dateTimeX: true);
+                    plt.PlotSignalXY(prices.Keys.ToArray(), prices.Values.ToArray());
+
+                    var prevAction = Trade.TOrderType.Sell;
+                    double refPrice = 0.0;
+                
+                    foreach (var price in prices)
+                    {
+
+                        dt = DateTime.FromOADate(price.Value);
+
+                        if ( strategy.Decide(price.Value, refPrice, prevAction) )
+                        {
+                            if (prevAction == Trade.TOrderType.Buy)
+                            {
+                                plt.PlotPoint(price.Key, price.Value, color: Color.Red );
+                                pltMoney.PlotPoint(price.Key, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
+
+                                refPrice = price.Value;
+                                MarketExchange.Sell(symbol, price.Value, stratDef.Percentage, dt, false);
+                                ++cptOp;
+                                prevAction = Trade.TOrderType.Sell; 
+                            }
+                            else
+                            {
+                                plt.PlotPoint(price.Key, price.Value, color: Color.Green );
+                                pltMoney.PlotPoint(price.Key, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
+
+                                refPrice = price.Value;
+                                MarketExchange.Buy(symbol, price.Value, stratDef.Percentage, dt, false);
+                                ++cptOp;
+                                prevAction = Trade.TOrderType.Buy;
+                            }
+                        }
+                    }
+
+                    plt.Title( symbol.SymbolName + " with " + strategy.Name() );
+                    plt.YLabel("Value (Euro))");
+                    plt.XLabel("Time" );
+                    plt.SaveFig(symbol.SymbolName + ".png" );
+
+                    MarketExchange.ResetRateLimitCounter();
+                }
             }
 
             pltMoney.Title( "Your Portfolio" );
@@ -109,6 +174,7 @@ namespace Cryptothune.Lib
             pltMoney.XLabel("Time");
             pltMoney.SaveFig ("money.png");
         }
+        */
         /// <summary>
         /// Perform a real run
         /// </summary>
@@ -127,11 +193,11 @@ namespace Cryptothune.Lib
                     {
                         if (prevTrade.OrderType == Trade.TOrderType.Buy)
                         {
-                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, false);
+                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, false);
                         }
                         else
                         {
-                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, false);
+                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, false);
                         }
                     }
 
@@ -158,11 +224,11 @@ namespace Cryptothune.Lib
                     {
                         if (prevTrade.OrderType == Trade.TOrderType.Buy)
                         {
-                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, true);
+                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, true);
                         }
                         else
                         {
-                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, true);
+                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, true);
                         }
                     }
 
