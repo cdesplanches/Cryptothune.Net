@@ -81,33 +81,43 @@ namespace Cryptothune.Lib
             pltMoney.Ticks(dateTimeX: true);
             int cptOp = 0;           
             
-            foreach ( var marketEntry in marketPrices )
+            int ms = 0;
+            dt = DateTime.FromOADate(marketPrices.First().Item1);
+            for ( int idx = 0; idx < marketPrices.Count; idx++)
             {
-                dt = DateTime.FromOADate(marketEntry.Item1);
-                foreach ( var stratDef in _strategies )
+                var oa = dt.AddMilliseconds(ms).ToOADate();
+                var marketEntry = marketPrices[idx];
+                if (marketEntry.Item1>=oa)
                 {
-                    var assetName = stratDef.AssetName;
-                    if ( assetName.BaseName == marketEntry.Item2 )
+                    dt = DateTime.FromOADate(marketEntry.Item1);
+                    foreach ( var stratDef in _strategies )
                     {
-                        var strategy = stratDef.Strategy;
-                        var marketPrice = marketEntry.Item3;
-                        var prevTrade = MarketExchange.LatestTrade(assetName);
-                        if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
+                        var assetName = stratDef.AssetName;
+                        if ( assetName.BaseName == marketEntry.Item2 )
                         {
-                            if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                            var strategy = stratDef.Strategy;
+                            var marketPrice = marketEntry.Item3;
+                            var prevTrade = MarketExchange.LatestTrade(assetName);
+                            if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
                             {
-                                plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
-                                MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false);
-                            }
-                            else
-                            {
-                                plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
-                                MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false);
+                                if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                                {
+                                    plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
+                                    if ( MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                        ++cptOp;
+                                }
+                                else
+                                {
+                                    plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
+                                    if ( MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                        ++cptOp;
+                                }
                             }
                         }
                     }
-                    
                 }
+
+                ms = MarketExchange.PreventRateLimit();
             }
             pltMoney.Title( "Your Portfolio" );
             pltMoney.YLabel("Cash (Euro)) =" + MarketExchange.Balance("ZEUR") + " EUR & Nb Op = " + cptOp);
@@ -119,62 +129,6 @@ namespace Cryptothune.Lib
                 ppp.Value.SaveFig(ppp.Key + ".png" );
             }
         }
-
-
-/*
-                    var prices = MarketExchange.PricesHistory(symbol);
-                    var plt = new ScottPlot.Plot(2048, 1024);
-                    plt.Ticks(dateTimeX: true);
-                    plt.PlotSignalXY(prices.Keys.ToArray(), prices.Values.ToArray());
-
-                    var prevAction = Trade.TOrderType.Sell;
-                    double refPrice = 0.0;
-                
-                    foreach (var price in prices)
-                    {
-
-                        dt = DateTime.FromOADate(price.Value);
-
-                        if ( strategy.Decide(price.Value, refPrice, prevAction) )
-                        {
-                            if (prevAction == Trade.TOrderType.Buy)
-                            {
-                                plt.PlotPoint(price.Key, price.Value, color: Color.Red );
-                                pltMoney.PlotPoint(price.Key, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
-
-                                refPrice = price.Value;
-                                MarketExchange.Sell(symbol, price.Value, stratDef.Percentage, dt, false);
-                                ++cptOp;
-                                prevAction = Trade.TOrderType.Sell; 
-                            }
-                            else
-                            {
-                                plt.PlotPoint(price.Key, price.Value, color: Color.Green );
-                                pltMoney.PlotPoint(price.Key, MarketExchange.Balance(symbol.QuoteName), color: Color.Black);  
-
-                                refPrice = price.Value;
-                                MarketExchange.Buy(symbol, price.Value, stratDef.Percentage, dt, false);
-                                ++cptOp;
-                                prevAction = Trade.TOrderType.Buy;
-                            }
-                        }
-                    }
-
-                    plt.Title( symbol.SymbolName + " with " + strategy.Name() );
-                    plt.YLabel("Value (Euro))");
-                    plt.XLabel("Time" );
-                    plt.SaveFig(symbol.SymbolName + ".png" );
-
-                    MarketExchange.ResetRateLimitCounter();
-                }
-            }
-
-            pltMoney.Title( "Your Portfolio" );
-            pltMoney.YLabel("Cash (Euro)) =" + MarketExchange.Balance("ZEUR") + " EUR & Nb Op = " + cptOp);
-            pltMoney.XLabel("Time");
-            pltMoney.SaveFig ("money.png");
-        }
-        */
         /// <summary>
         /// Perform a real run
         /// </summary>

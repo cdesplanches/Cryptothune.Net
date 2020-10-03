@@ -64,10 +64,13 @@ namespace Cryptothune.Lib
         /// <summary>
         /// Stop the execution on the process in order to respect the rate limiter.
         /// </summary>
-        public virtual void PreventRateLimit()
+        public virtual int PreventRateLimit()
         {
+            var ms = RateLimiterPenality;
             Task.Delay(RateLimiterPenality).Wait();
             RateLimiterPenality = 0;
+
+            return ms;
         }
         /// <summary>
         /// Reset the rate limit counter

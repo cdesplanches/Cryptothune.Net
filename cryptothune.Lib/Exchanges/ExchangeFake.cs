@@ -69,7 +69,7 @@ namespace Cryptothune.Lib
             var dic = new Dictionary<string, decimal>();
             foreach ( var ass in _assetPortfolio )
             {
-                double bal = 0;
+                double bal = ass.Value;;
                 if ( _priceHistory.ContainsKey(ass.Key) )
                 {
                     var keys = _priceHistory[ass.Key].Keys;
@@ -78,29 +78,14 @@ namespace Cryptothune.Lib
                         var nearest = oa - keys.Where(k => k <= oa)
                                                 .Min(k => oa - k);
                         var prc = _priceHistory[ass.Key][nearest];
-                        bal = prc * ass.Value;
+                        _money += prc * ass.Value;
                     }
-                    else
-                        bal = ass.Value;  
-/*
-                    var prc = from pr in _priceHistory[ass.Key]
-                        where pr.Key == oa
-                        select pr.Value;
-                        
-                    if (prc != null )
-                    {
-                        bal = prc * ass.Value;
-                    }
-                    else
-                    {
-                        bal = ass.Value;
-                    }
-*/                    
                 }
                 else
-                    bal = ass.Value;
+                {
+                    _money += ass.Value;
+                }
 
-                _money += bal;                
                 dic.Add(ass.Key, (decimal)bal);
             }
 
@@ -113,7 +98,8 @@ namespace Cryptothune.Lib
         /// <returns></returns>
         public override double Balance(string asset)
         {
-            return _assetPortfolio[asset];
+            return _money;
+//            return _assetPortfolio[asset];
         }
         /// <summary>
         /// Fake a deposit order (update the entry on the sqlite DB)
@@ -254,10 +240,20 @@ namespace Cryptothune.Lib
                     fullyUpdated = true;
                 }
 
-                PreventRateLimit(); // To avoid a rate limit exception on Kraken API public calls.
+                base.PreventRateLimit(); // To avoid a rate limit exception on Kraken API public calls.
             }
 
             return con;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int PreventRateLimit()
+        {
+            var ms = RateLimiterPenality;
+            RateLimiterPenality = 0;
+            return ms;
         }
         /// <summary>
         /// Get the latest transaction performed for a given asset
@@ -305,10 +301,10 @@ namespace Cryptothune.Lib
 
             var fiatSymbol = assetName.QuoteName;                   // "XRPEUR" => "ZEUR"
             var assetSymbol = assetName.SymbolName;
-            var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
-            var amount = (totalBalance*ratio)/100.0;                // Percentage of this total balance that can be used to p
             var bal = Balances(dd);
             var availBalance = (double)bal[fiatSymbol];             // Available money for trading.
+            var totalBalance = Balance(fiatSymbol);                 // Total balance of the portfolio on this exchange market
+            var amount = (totalBalance*ratio)/100.0;                // Percentage of this total balance that can be used to p
             if ( amount > availBalance)
             {
                 amount = availBalance;
@@ -342,7 +338,7 @@ namespace Cryptothune.Lib
             var qty = bal[assetName.BaseName];
             if ( qty > 0)
             {
-                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + qty + " - Price:" + marketPrice + " - Total: " + (double)qty/marketPrice + " " + assetName.QuoteName );
+                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + (double)qty + " - Price:" + marketPrice + " - Total: " + (double)qty*marketPrice + " " + assetName.QuoteName );
                 var success = PlaceOrder(assetName, Trade.TOrderType.Sell, dd, marketPrice, (double)qty);
                 RateLimiterPenality += 3000;
                 return success;
@@ -364,10 +360,8 @@ namespace Cryptothune.Lib
             var t = new Trade();
             t.Timestamp = dt;
             t.RefPrice = price;
-            t.Quantity = amount;
             t.OrderType = orderType;
             t.Asset = assetName;
-            _tradeHistory.Add(t);
 
             var bal = Balances(dt);
             var balance = bal[assetName.BaseName];
@@ -377,21 +371,26 @@ namespace Cryptothune.Lib
                 var fees = Fees((price*amount), orderType);
                 decimal total = (decimal)((price*amount)-fees);
 
+                t.Quantity = (double)amount;
                 balance += (decimal)amount;
                 _assetPortfolio[assetName.QuoteName] -= (double)total;
+                //_money -= (double)total;
             }
             else
             {
-                var fees = Fees((amount/price), orderType);
-                decimal total = (decimal)((amount/price)-fees);
+                var fees = Fees((price*amount), orderType);
+                decimal total = (decimal)((price*amount)-fees);
 
+                t.Quantity = (double)amount;
                 balance -= (decimal)amount;
                 _assetPortfolio[assetName.QuoteName] += (double)total;
+                //_money += (double)total;
             }
 
             
             _assetPortfolio[assetName.BaseName] = (double)balance;
 
+            _tradeHistory.Add(t);
 
             return true;
         }

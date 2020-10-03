@@ -174,6 +174,12 @@
             <param name="assetName"></param>
             <returns></returns>
         </member>
+        <member name="M:Cryptothune.Lib.ExchangeFake.PreventRateLimit">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Cryptothune.Lib.ExchangeFake.LatestTrade(Cryptothune.Lib.AssetSymbol)">
             <summary>
             Get the latest transaction performed for a given asset

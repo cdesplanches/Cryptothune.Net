@@ -73,7 +73,7 @@ namespace Cryptothune.Lib
         /// <summary>
         /// Pause the execution according to the current rate limiter counter.
         /// </summary>
-        void PreventRateLimit();
+        int PreventRateLimit();
         /// <summary>
         /// Reset the rate limit counter
         /// </summary>
