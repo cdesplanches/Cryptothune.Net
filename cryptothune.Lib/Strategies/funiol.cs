@@ -7,11 +7,20 @@ namespace Cryptothune.Lib
     /// </summary>
     public class Funiol : IStrategy
     {
+        private double _threshold;
+        private double _ruptor;
+        private double _proba;
         /// <summary>
         /// ctor
         /// </summary>
-        public Funiol()
+        /// <param name="threshold">Threshold to trig the decision</param>
+        /// <param name="ruptor">% to force a decision</param>
+        /// <param name="proba">The probability to take a decision</param>
+        public Funiol(double threshold=2.5, double ruptor=6.5, double proba=0.9)
         {
+            _threshold = threshold;
+            _ruptor = ruptor;
+            _proba = proba;
         }
         /// <summary>
         /// The name of this algo
@@ -44,15 +53,15 @@ namespace Cryptothune.Lib
             double marketStatus = curPrice - refPrice;
             var p = Percentage(Math.Abs(marketStatus), curPrice);
 
-            if (p>6.5)
-                penality = 1.0; // 1.0
+            if (p>_ruptor)
+                penality = 1.0;
             else
             {
                 if ((marketStatus>0 && (prevAction == Trade.TOrderType.Buy)) || (marketStatus <0 && (prevAction == Trade.TOrderType.Sell)))
                 {
-                    if (p>=2.5)
+                    if (p>=_threshold)
                     {
-                        penality = 0.9; // 1.0
+                        penality = _proba;
                     }
                 }
             }

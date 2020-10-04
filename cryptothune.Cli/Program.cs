@@ -45,18 +45,18 @@ namespace Cryptothune.Cli
                         {
                             var bot = new BotThune<ExchangeFake>();
                             bot.MarketExchange.Deposit(295.0);
-                            var strategy = new Funiol();
+                            var strategy = new Funiol(1.0, 7.0, 0.6);
                             bot.AddStrategy(strategy, "XTZEUR", 20.0 );
                             bot.AddStrategy(strategy, "XRPEUR", 80.0 );
-                            bot.Sim(startDate: new DateTime(2020, 09, 07));
+                            bot.Sim(startDate: new DateTime(2020, 07, 07));
                         }
                         else
                         {
                             var bot = new BotThune<ExchangeKraken>();
-                            var strategy = new Funiol();
-                            bot.AddStrategy(strategy, "XTZEUR", 50.0);
-                            bot.AddStrategy(strategy, "BTCEUR", 45.0);
-                            bot.AddStrategy(strategy, "XRPEUR", 5.0 );
+                            var strategy = new Funiol(1.0, 7.0, 0.6);
+                            bot.AddStrategy(strategy, "XTZEUR", 20.0);
+                            bot.AddStrategy(strategy, "BTCEUR", 5.0);
+                            bot.AddStrategy(strategy, "XRPEUR", 75.0 );
                             if ( o.DryRun )
                             {
                                 bot.DryRun();

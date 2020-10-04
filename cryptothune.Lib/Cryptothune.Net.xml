@@ -111,15 +111,12 @@
             <summary>
             the list of trades.
             </summary>
-            <typeparam name="Trade"></typeparam>
             <returns></returns>
         </member>
         <member name="F:Cryptothune.Lib.ExchangeFake._assetPortfolio">
             <summary>
             
             </summary>
-            <typeparam name="string"></typeparam>
-            <typeparam name="double"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Cryptothune.Lib.ExchangeFake.#ctor">
@@ -432,6 +429,16 @@
             Buy, or Sell
             </summary>
         </member>
+        <member name="F:Cryptothune.Lib.Trade.TOrderType.Buy">
+            <summary>
+            A Buy trade
+            </summary>
+        </member>
+        <member name="F:Cryptothune.Lib.Trade.TOrderType.Sell">
+            <summary>
+            A Sell trade
+            </summary>
+        </member>
         <member name="M:Cryptothune.Lib.Trade.#ctor">
             <summary>
             ctor
@@ -467,15 +474,41 @@
             </summary>
             <value></value>
         </member>
+        <member name="T:Cryptothune.Lib.RetryHelper`1">
+            <summary>
+            Helper class about retries on case of errors
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Cryptothune.Lib.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Action)">
+            <summary>
+            Retry on exception
+            </summary>
+            <param name="times">Nb of retry</param>
+            <param name="delay">Delay betzeen 2 retry</param>
+            <param name="operation">A void func to call if success.</param>
+        </member>
+        <member name="M:Cryptothune.Lib.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Func{CryptoExchange.Net.Objects.WebCallResult{`0}})">
+            <summary>
+            Retry on error
+            </summary>
+            <param name="times">Nb retry</param>
+            <param name="delay">delay to wait between 2 retries</param>
+            <param name="operation">the function to call.</param>
+            <returns></returns>
+        </member>
         <member name="T:Cryptothune.Lib.Funiol">
             <summary>
             Funiol, the strangest trader ever.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.Funiol.#ctor">
+        <member name="M:Cryptothune.Lib.Funiol.#ctor(System.Double,System.Double,System.Double)">
             <summary>
             ctor
             </summary>
+            <param name="threshold">Threshold to trig the decision</param>
+            <param name="ruptor">% to force a decision</param>
+            <param name="proba">The probability to take a decision</param>
         </member>
         <member name="M:Cryptothune.Lib.Funiol.Name">
             <summary>
