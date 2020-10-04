@@ -10,6 +10,8 @@ namespace Cryptothune.Lib
         /// <summary>
         /// Buy, or Sell
         /// </summary>
+        /// <typeparam name="Buy"></typeparam>
+        /// <typeparam name="Sell"></typeparam>
         public enum TOrderType { Buy = 1, Sell = 2 };
         /// <summary>
         /// ctor

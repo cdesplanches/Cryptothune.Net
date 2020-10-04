@@ -27,14 +27,11 @@ namespace Cryptothune.Lib
         /// <summary>
         /// the list of trades.
         /// </summary>
-        /// <typeparam name="Trade"></typeparam>
         /// <returns></returns>
         private List<Trade> _tradeHistory = new List<Trade>();
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="string"></typeparam>
-        /// <typeparam name="double"></typeparam>
         /// <returns></returns>
         private Dictionary<string, double> _assetPortfolio = new Dictionary<string, double>();
         /// <summary>

@@ -5,8 +5,18 @@ using CryptoExchange.Net.Objects;
 
 namespace Cryptothune.Lib
 {
+    /// <summary>
+    /// Helper class about retries on case of errors
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public static class RetryHelper<T>
     {
+        /// <summary>
+        /// Retry on exception
+        /// </summary>
+        /// <param name="times">Nb of retry</param>
+        /// <param name="delay">Delay betzeen 2 retry</param>
+        /// <param name="operation">A void func to call if success.</param>
         public static void RetryOnException(int times, TimeSpan delay, Action operation)
         {
             var remainingTries = times;  
@@ -29,8 +39,13 @@ namespace Cryptothune.Lib
 
             throw new AggregateException(exceptions);
         }
-
-
+        /// <summary>
+        /// Retry on error
+        /// </summary>
+        /// <param name="times">Nb retry</param>
+        /// <param name="delay">delay to wait between 2 retries</param>
+        /// <param name="operation">the function to call.</param>
+        /// <returns></returns>
         public static WebCallResult<T> RetryOnException(int times, TimeSpan delay, Func<WebCallResult<T>> operation)
         {
             var remainingTries = times;
