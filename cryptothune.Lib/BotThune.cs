@@ -48,11 +48,9 @@ namespace Cryptothune.Lib
         ///     3. Export a picture of the Buy/Sell history (graph)
         ///     4. Export a picture of the evolution of the fiat balance.
         /// </summary>
-        public void Sim()
+        public void Sim( DateTime? startDate = null, DateTime? endDate = null )
         {
             NLog.LogManager.GetCurrentClassLogger().Info("Start simulate Buy/Sell trades");
-
-            DateTime dt = DateTime.Now;
 
             var marketPrices = new List<ValueTuple<double, string, double>>();
             var plt = new Dictionary<string, ScottPlot.Plot>();
@@ -77,16 +75,24 @@ namespace Cryptothune.Lib
             }
             marketPrices.Sort();
            
+
             var pltMoney = new ScottPlot.Plot(2048, 1024);
             pltMoney.Ticks(dateTimeX: true);
             int cptOp = 0;           
             
-            int ms = 0;
-            dt = DateTime.FromOADate(marketPrices.First().Item1);
-            for ( int idx = 0; idx < marketPrices.Count; idx++)
+            var dt = startDate ?? DateTime.FromOADate(marketPrices.First().Item1);
+            var edt = endDate ?? DateTime.Now;
+            var ms = 0;//Math.Max(0, (dt-sdt).TotalMilliseconds);               // 0 or the number of millisecond betzeen startdate and the first datetime entry on the list of prices
+
+            var eoa = edt.ToOADate();
+            List<double> xs = new List<double>();
+            List<double> ys = new List<double>();
+            foreach ( var marketEntry in marketPrices )
             {
                 var oa = dt.AddMilliseconds(ms).ToOADate();
-                var marketEntry = marketPrices[idx];
+                if ( oa >= eoa)
+                    break;
+
                 if (marketEntry.Item1>=oa)
                 {
                     dt = DateTime.FromOADate(marketEntry.Item1);
@@ -102,15 +108,26 @@ namespace Cryptothune.Lib
                             {
                                 if (prevTrade.OrderType == Trade.TOrderType.Buy)
                                 {
-                                    plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
                                     if ( MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                    {
                                         ++cptOp;
+                                        plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
+                                        xs.Add(oa);
+                                        ys.Add(MarketExchange.Balance("ZEUR"));
+                                        //pltMoney.PlotPoint(oa, MarketExchange.Balance("ZEUR"), color: Color.Green );
+                                    }
+                                        
                                 }
                                 else
                                 {
-                                    plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
                                     if ( MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                    {
                                         ++cptOp;
+                                        plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
+                                        xs.Add(oa);
+                                        ys.Add(MarketExchange.Balance("ZEUR"));
+                                        //pltMoney.PlotPoint(oa, MarketExchange.Balance("ZEUR"), color: Color.Red );
+                                    }
                                 }
                             }
                         }
@@ -119,6 +136,8 @@ namespace Cryptothune.Lib
 
                 ms = MarketExchange.PreventRateLimit();
             }
+
+            pltMoney.PlotSignalXY( xs.ToArray(), ys.ToArray(), color: Color.Red );
             pltMoney.Title( "Your Portfolio" );
             pltMoney.YLabel("Cash (Euro)) =" + MarketExchange.Balance("ZEUR") + " EUR & Nb Op = " + cptOp);
             pltMoney.XLabel("Time");

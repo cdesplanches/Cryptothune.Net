@@ -246,7 +246,7 @@ namespace Cryptothune.Lib
             return con;
         }
         /// <summary>
-        /// 
+        /// Override of the PreventRateLimit
         /// </summary>
         /// <returns></returns>
         public override int PreventRateLimit()

@@ -1,6 +1,5 @@
 using System;
 
-
 namespace Cryptothune.Lib
 {
     /// <summary>

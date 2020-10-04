@@ -44,11 +44,11 @@ namespace Cryptothune.Cli
                         if ( o.Simulate )
                         {
                             var bot = new BotThune<ExchangeFake>();
-                            bot.MarketExchange.Deposit(500.0);
+                            bot.MarketExchange.Deposit(295.0);
                             var strategy = new Funiol();
-                            bot.AddStrategy(strategy, "XTZEUR", 70.0 );
-                            bot.AddStrategy(strategy, "XRPEUR", 30.0 );
-                            bot.Sim();
+                            bot.AddStrategy(strategy, "XTZEUR", 20.0 );
+                            bot.AddStrategy(strategy, "XRPEUR", 80.0 );
+                            bot.Sim(startDate: new DateTime(2020, 09, 07));
                         }
                         else
                         {
