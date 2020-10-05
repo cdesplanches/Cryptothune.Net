@@ -48,7 +48,7 @@ namespace Cryptothune.Cli
                             var strategy = new Funiol(1.0, 7.0, 0.6);
                             bot.AddStrategy(strategy, "XTZEUR", 20.0 );
                             bot.AddStrategy(strategy, "XRPEUR", 80.0 );
-                            bot.Sim(startDate: new DateTime(2020, 07, 07));
+                            bot.Sim(startDate: new DateTime(2020, 09, 07));
                         }
                         else
                         {
