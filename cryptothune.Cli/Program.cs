@@ -52,7 +52,7 @@ namespace Cryptothune.Cli
                         }
                         else
                         {
-                            var bot = new BotThune<ExchangeKraken>();
+                             var bot = new BotThune<ExchangeKraken>();
                             var strategy = new Funiol(1.0, 7.0, 0.6);
                             bot.AddStrategy(strategy, "XTZEUR", 20.0);
                             bot.AddStrategy(strategy, "BTCEUR", 5.0);

@@ -87,9 +87,16 @@ namespace Cryptothune.Lib
             var eoa = edt.ToOADate();
             List<double> xs = new List<double>();
             List<double> ys = new List<double>();
+            double oactrl = 0.0;
             foreach ( var marketEntry in marketPrices )
             {
                 var oa = dt.AddMilliseconds(ms).ToOADate();
+                if ( oa == oactrl )
+                {
+                    ms += 1000;
+                    continue;
+                }
+                    
                 if ( oa >= eoa)
                     break;
 
@@ -106,6 +113,7 @@ namespace Cryptothune.Lib
                             var prevTrade = MarketExchange.LatestTrade(assetName);
                             if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
                             {
+                                oactrl = oa;
                                 if (prevTrade.OrderType == Trade.TOrderType.Buy)
                                 {
                                     if ( MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false) )

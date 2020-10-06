@@ -86,6 +86,7 @@ namespace Cryptothune.Lib
                 dic.Add(ass.Key, (decimal)bal);
             }
 
+            RateLimiterPenality += 6000;
             return dic;
         }
         /// <summary>
@@ -95,6 +96,7 @@ namespace Cryptothune.Lib
         /// <returns></returns>
         public override double Balance(string asset)
         {
+            RateLimiterPenality += 6000;
             return _money;
 //            return _assetPortfolio[asset];
         }
@@ -248,7 +250,7 @@ namespace Cryptothune.Lib
         /// <returns></returns>
         public override int PreventRateLimit()
         {
-            var ms = RateLimiterPenality;
+            var ms = RateLimiterPenality+1000;      // Add a default penality
             RateLimiterPenality = 0;
             return ms;
         }
@@ -310,7 +312,7 @@ namespace Cryptothune.Lib
             var qty = amount / price;
             if ( qty >= assetName.OrderMin )
             {
-                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
+                NLog.LogManager.GetCurrentClassLogger().Info( dd + "|Place Order: Buy (" + assetSymbol + ") - Quantity: " + qty + " - Price:" + price + " - Total: " + amount + " " + assetName.QuoteName );
                 var success = PlaceOrder(assetName, Trade.TOrderType.Buy, dd, price, qty);
                 RateLimiterPenality += 3000;
                 return success;
@@ -335,7 +337,7 @@ namespace Cryptothune.Lib
             var qty = bal[assetName.BaseName];
             if ( qty > 0)
             {
-                NLog.LogManager.GetCurrentClassLogger().Info("Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + (double)qty + " - Price:" + marketPrice + " - Total: " + (double)qty*marketPrice + " " + assetName.QuoteName );
+                NLog.LogManager.GetCurrentClassLogger().Info(dd + "|Place Order: Sell (" + assetName.SymbolName + ") - Quantity: " + (double)qty + " - Price:" + marketPrice + " - Total: " + (double)qty*marketPrice + " " + assetName.QuoteName );
                 var success = PlaceOrder(assetName, Trade.TOrderType.Sell, dd, marketPrice, (double)qty);
                 RateLimiterPenality += 3000;
                 return success;
