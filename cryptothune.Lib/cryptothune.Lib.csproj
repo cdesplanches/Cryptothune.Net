@@ -10,11 +10,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Cryptoexchange.net" Version="3.0.14" />
-    <Reference Include="KrakenExchange.Net">
-      <HintPath>..\Dependencies\Kraken.Net.dll</HintPath>
-    </Reference>
-    <!--<PackageReference Include="KrakenExchange.Net" Version="1.1.1" />-->
+    <PackageReference Include="KrakenExchange.Net" Version="1.1.5" />
     <PackageReference Include="NLog" Version="4.7.4" />
     <PackageReference Include="ScottPlot" Version="4.0.39" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.113.1" />
