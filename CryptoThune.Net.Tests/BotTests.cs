@@ -1,19 +1,20 @@
 using System;
-using Xunit;
+using NUnit.Framework;
 using CryptoThune.Net;
 
-namespace Cryptothune.Tests
+namespace CryptoThune.Net.Tests
 {
+    [TestFixture]
     public class BotTests
     {
-        [Fact]
+        [TestCase()]
         public void TestAssets()
         {
             //var bot = new BotThune<ExchangeKraken>();
 
         }
         
-        [Fact]
+        [TestCase()]
         public void TestSim()
         {
             /*
@@ -27,7 +28,7 @@ namespace Cryptothune.Tests
             */
         }
 
-        [Fact]
+        [TestCase()]
         public void TestDryRun()
         {
             /*
@@ -40,7 +41,7 @@ namespace Cryptothune.Tests
             */
         }
 
-        [Fact]
+        [TestCase()]
         public void TestRun()
         {
             /*

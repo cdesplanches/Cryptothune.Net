@@ -1,12 +1,13 @@
 using System;
-using Xunit;
+using NUnit.Framework;
 using CryptoThune.Net;
 
-namespace Cryptothune.Tests
+namespace CryptoThune.Net.Tests
 {
+    [TestFixture]
     public class ExchangesTests
     {
-        [Fact]
+        [TestCase()]
         public void TestFakeBuySell()
         {
             ExchangeFake kr = new ExchangeFake();
@@ -39,7 +40,7 @@ namespace Cryptothune.Tests
             Console.WriteLine ( "Dispo: " + kr.Balances()["ZEUR"] );
         }
 
-        [Fact]
+        [TestCase()]
         public void TestFakeBuy()
         {
             ExchangeFake kr = new ExchangeFake();
@@ -48,7 +49,7 @@ namespace Cryptothune.Tests
             kr.Buy(xtz, 2.19, 50, null, true);
         }
 
-        [Fact]
+        [TestCase()]
         public void TestFakeSell()
         {
             ExchangeFake kr = new ExchangeFake();
@@ -57,7 +58,7 @@ namespace Cryptothune.Tests
             kr.Sell(xtz, 2.35, 50, null, true);
         }
 
-        [Fact]
+        [TestCase()]
         public void TestBuy()
         {
             ExchangeKraken kr = new ExchangeKraken();
@@ -70,7 +71,7 @@ namespace Cryptothune.Tests
             kr.Buy(xrp, 0.20, 10, null, true);
         }
 
-        [Fact]
+        [TestCase()]
         public void TestSell()
         {
             ExchangeKraken kr = new ExchangeKraken();
