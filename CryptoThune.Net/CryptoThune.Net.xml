@@ -4,32 +4,32 @@
         <name>CryptoThune.Net</name>
     </assembly>
     <members>
-        <member name="T:Cryptothune.Lib.BotThune`1">
+        <member name="T:CryptoThune.Net.BotThune`1">
             <summary>
             The Bot class that apply strategy on a given crypto market exchange place
             </summary>
             <typeparam name="T"></typeparam>
         </member>
-        <member name="M:Cryptothune.Lib.BotThune`1.#ctor">
+        <member name="M:CryptoThune.Net.BotThune`1.#ctor">
             <summary>
             ctor
             </summary>
         </member>
-        <member name="P:Cryptothune.Lib.BotThune`1.MarketExchange">
+        <member name="P:CryptoThune.Net.BotThune`1.MarketExchange">
             <summary>
             return the market exchange place object
             </summary>
             <value>the market exchange place</value>
         </member>
-        <member name="M:Cryptothune.Lib.BotThune`1.AddStrategy(Cryptothune.Lib.IStrategy,System.String,System.Double)">
+        <member name="M:CryptoThune.Net.BotThune`1.AddStrategy(CryptoThune.Net.IStrategy,System.String,System.Double)">
             <summary>
             Add a trading strategy to a specified symbol.
             </summary>
-            <param name="strategy">the strategy to apply on the selected symbol. <see cref="T:Cryptothune.Lib.IStrategy"/> </param>
+            <param name="strategy">the strategy to apply on the selected symbol. <see cref="T:CryptoThune.Net.IStrategy"/> </param>
             <param name="symbol">Symbol ex: "XRPEUR" </param>
             <param name="percent">Percentage of the portfolio to allocate to this strategy</param>
         </member>
-        <member name="M:Cryptothune.Lib.BotThune`1.Sim(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:CryptoThune.Net.BotThune`1.Sim(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Launch a simulation of trades on the current exchange.
             It will:
@@ -39,22 +39,22 @@
                 4. Export a picture of the evolution of the fiat balance.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.BotThune`1.Run">
+        <member name="M:CryptoThune.Net.BotThune`1.Run">
             <summary>
             Perform a real run
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.BotThune`1.DryRun">
+        <member name="M:CryptoThune.Net.BotThune`1.DryRun">
             <summary>
             Perform a dry run
             </summary>
         </member>
-        <member name="T:Cryptothune.Lib.AssetSymbol">
+        <member name="T:CryptoThune.Net.AssetSymbol">
             <summary>
             Define what is a symbol
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.AssetSymbol.#ctor(System.String,System.String,System.String)">
+        <member name="M:CryptoThune.Net.AssetSymbol.#ctor(System.String,System.String,System.String)">
             <summary>
             ctor
             </summary>
@@ -62,129 +62,129 @@
             <param name="baseName"></param>
             <param name="quoteName"></param>
         </member>
-        <member name="P:Cryptothune.Lib.AssetSymbol.QuoteName">
+        <member name="P:CryptoThune.Net.AssetSymbol.QuoteName">
             <summary>
             The Quote name of a symbol (ex: ZEUR)
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.AssetSymbol.BaseName">
+        <member name="P:CryptoThune.Net.AssetSymbol.BaseName">
             <summary>
             The base name of the symbol (ex: XBT)
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.AssetSymbol.SymbolName">
+        <member name="P:CryptoThune.Net.AssetSymbol.SymbolName">
             <summary>
             The complete symbol name. (ex: XXBTEUR)
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.AssetSymbol.OrderMin">
+        <member name="P:CryptoThune.Net.AssetSymbol.OrderMin">
             <summary>
             The minimum order authorized for this asset
             </summary>
             <value></value>
         </member>
-        <member name="T:Cryptothune.Lib.ExchangeFake">
+        <member name="T:CryptoThune.Net.ExchangeFake">
             <summary>
             A 'fake' exchqnge market, built on top of the kraken public exchange market.
             </summary>
         </member>
-        <member name="P:Cryptothune.Lib.ExchangeFake._money">
+        <member name="P:CryptoThune.Net.ExchangeFake._money">
             <summary>
             The current amount of money on the 'fake' portfolio
             </summary>
             <value></value>
         </member>
-        <member name="F:Cryptothune.Lib.ExchangeFake._fakeDB">
+        <member name="F:CryptoThune.Net.ExchangeFake._fakeDB">
             <summary>
             Internal Database
             </summary>
         </member>
-        <member name="F:Cryptothune.Lib.ExchangeFake._priceHistory">
+        <member name="F:CryptoThune.Net.ExchangeFake._priceHistory">
             <summary>
             Store the market price history
             </summary>
         </member>
-        <member name="F:Cryptothune.Lib.ExchangeFake._tradeHistory">
+        <member name="F:CryptoThune.Net.ExchangeFake._tradeHistory">
             <summary>
             the list of trades.
             </summary>
             <returns></returns>
         </member>
-        <member name="F:Cryptothune.Lib.ExchangeFake._assetPortfolio">
+        <member name="F:CryptoThune.Net.ExchangeFake._assetPortfolio">
             <summary>
             
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.#ctor">
+        <member name="M:CryptoThune.Net.ExchangeFake.#ctor">
             <summary>
             ctor
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Balances(System.Nullable{System.DateTime})">
+        <member name="M:CryptoThune.Net.ExchangeFake.Balances(System.Nullable{System.DateTime})">
             <summary>
             Get the total balances of the virtual portfolio
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Balance(System.String)">
+        <member name="M:CryptoThune.Net.ExchangeFake.Balance(System.String)">
             <summary>
             Get the current available balance (from the DB)
             </summary>
             <param name="asset"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Deposit(System.Double)">
+        <member name="M:CryptoThune.Net.ExchangeFake.Deposit(System.Double)">
             <summary>
             Fake a deposit order (update the entry on the sqlite DB)
             </summary>
             <param name="money"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Name">
+        <member name="M:CryptoThune.Net.ExchangeFake.Name">
             <summary>
             The name of this Fake market exchange
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.NormalizeSymbolName(System.String)">
+        <member name="M:CryptoThune.Net.ExchangeFake.NormalizeSymbolName(System.String)">
             <summary>
             Return the normalized name for a given symbol
             </summary>
             <param name="symbol"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeFake.PricesHistory(CryptoThune.Net.AssetSymbol)">
             <summary>
             Get the prices history for a given asset
             </summary>
             <param name="assetName">The nqme of the asset to get the price history</param>
             <returns>list of prices</returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.ExportTradesOnDB(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeFake.ExportTradesOnDB(CryptoThune.Net.AssetSymbol)">
             <summary>
             Get the price history for a given asset and store it into a sqlite DB.
             </summary>
             <param name="assetName"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.PreventRateLimit">
+        <member name="M:CryptoThune.Net.ExchangeFake.PreventRateLimit">
             <summary>
             Override of the PreventRateLimit
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeFake.LatestTrade(CryptoThune.Net.AssetSymbol)">
             <summary>
             Get the latest transaction performed for a given asset
             </summary>
             <param name="assetName"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.ExchangeFake.Buy(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a 'fake' buy order
             </summary>
@@ -195,7 +195,7 @@
             <param name="dry"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.ExchangeFake.Sell(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a 'fake' sell order
             </summary>
@@ -206,7 +206,7 @@
             <param name="dry"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeFake.PlaceOrder(Cryptothune.Lib.AssetSymbol,Cryptothune.Lib.Trade.TOrderType,System.DateTime,System.Double,System.Double)">
+        <member name="M:CryptoThune.Net.ExchangeFake.PlaceOrder(CryptoThune.Net.AssetSymbol,CryptoThune.Net.Trade.TOrderType,System.DateTime,System.Double,System.Double)">
             <summary>
             Place a 'fake' order on the 'fake' exchange market
             </summary>
@@ -217,58 +217,58 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="T:Cryptothune.Lib.ExchangeKraken">
+        <member name="T:CryptoThune.Net.ExchangeKraken">
             <summary>
             Kraken market object
             </summary>
         </member>
-        <member name="F:Cryptothune.Lib.ExchangeKraken.kc">
+        <member name="F:CryptoThune.Net.ExchangeKraken.kc">
             <summary>
             The internal Kraken client (from Kraken.net)
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.#ctor">
+        <member name="M:CryptoThune.Net.ExchangeKraken.#ctor">
             <summary>
             ctor
             </summary>
         </member>
-        <member name="P:Cryptothune.Lib.ExchangeKraken.RateLimiterPenality">
+        <member name="P:CryptoThune.Net.ExchangeKraken.RateLimiterPenality">
             <summary>
             The rate limiter penality (in ms)
             </summary>
             <value>The value in ms of the penality of rate limiter </value>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.PreventRateLimit">
+        <member name="M:CryptoThune.Net.ExchangeKraken.PreventRateLimit">
             <summary>
             Stop the execution on the process in order to respect the rate limiter.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.ResetRateLimitCounter">
+        <member name="M:CryptoThune.Net.ExchangeKraken.ResetRateLimitCounter">
             <summary>
             Reset the rate limit counter
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Balances(System.Nullable{System.DateTime})">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Balances(System.Nullable{System.DateTime})">
             <summary>
             Get the current balance of all assets
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Balance(System.String)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Balance(System.String)">
             <summary>
             Get the fiat balance (for a given currency)
             </summary>
             <param name="asset">the fiat currency (ex: ZEUR, or ZUSD)</param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.MarketPrice(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.MarketPrice(CryptoThune.Net.AssetSymbol)">
             <summary>
             The current price for a given asset
             </summary>
             <param name="assetName"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.TradesHistory(Cryptothune.Lib.AssetSymbol,System.DateTime)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.TradesHistory(CryptoThune.Net.AssetSymbol,System.DateTime)">
             <summary>
             The recent trades history for a given symbol
             </summary>
@@ -276,28 +276,28 @@
             <param name="dt"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.NormalizeSymbolName(System.String)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.NormalizeSymbolName(System.String)">
             <summary>
             Normalize a given symbol name, like "XRPEUR" to the equivalent for Kraken Symbol.
             </summary>
             <param name="symbol">The symbol name (ex: "XRPEUR")</param>
             <returns>A generic Asset name object. </returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.PricesHistory(CryptoThune.Net.AssetSymbol)">
             <summary>
             Return the prices history for a given asset
             </summary>
             <param name="assetName">An normalized asset built from a normalized symbol name.</param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.LatestTrade(CryptoThune.Net.AssetSymbol)">
             <summary>
             Get the latest trades done for a given asset name
             </summary>
             <param name="assetName">The asset name to retreive the trade history on.</param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Buy(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a "Buy" order on the Kraken exchange market.
             </summary>
@@ -308,7 +308,7 @@
             <param name="dry"></param>
             <returns>true if the order is properly placed, false otherwise.</returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Sell(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a "Sell" order on the Kraken exchange market.
             </summary>
@@ -319,13 +319,13 @@
             <param name="dry">Is it for real or not?</param>
             <returns>true if the order was properly placed, false otherwise.</returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Name">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Name">
             <summary>
             The name of the exchqnge market
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.ExchangeKraken.Fees(System.Double,Cryptothune.Lib.Trade.TOrderType)">
+        <member name="M:CryptoThune.Net.ExchangeKraken.Fees(System.Double,CryptoThune.Net.Trade.TOrderType)">
             <summary>
             Return the fees for q Buy or Sell transaction.
             </summary>
@@ -333,19 +333,19 @@
             <param name="oType">Buy or Sell order.</param>
             <returns></returns>
         </member>
-        <member name="T:Cryptothune.Lib.IExchange">
+        <member name="T:CryptoThune.Net.IExchange">
             <summary>
             Interface for an exchange market
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.NormalizeSymbolName(System.String)">
+        <member name="M:CryptoThune.Net.IExchange.NormalizeSymbolName(System.String)">
             <summary>
             Normalize a symbol asset
             </summary>
             <param name="symbol"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.Fees(System.Double,Cryptothune.Lib.Trade.TOrderType)">
+        <member name="M:CryptoThune.Net.IExchange.Fees(System.Double,CryptoThune.Net.Trade.TOrderType)">
             <summary>
             Fees for a transaction
             </summary>
@@ -353,41 +353,41 @@
             <param name="oType"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.Balances(System.Nullable{System.DateTime})">
+        <member name="M:CryptoThune.Net.IExchange.Balances(System.Nullable{System.DateTime})">
             <summary>
             The complete balances
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.Balance(System.String)">
+        <member name="M:CryptoThune.Net.IExchange.Balance(System.String)">
             <summary>
             The balance for a given asset
             </summary>
             <param name="asset"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.PricesHistory(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.IExchange.PricesHistory(CryptoThune.Net.AssetSymbol)">
             <summary>
             The price history
             </summary>
             <param name="assetName"></param>
             <returns></returns>        
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.MarketPrice(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.IExchange.MarketPrice(CryptoThune.Net.AssetSymbol)">
             <summary>
             the current market price of a given asset
             </summary>
             <param name="assetName"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.LatestTrade(Cryptothune.Lib.AssetSymbol)">
+        <member name="M:CryptoThune.Net.IExchange.LatestTrade(CryptoThune.Net.AssetSymbol)">
             <summary>
             The last tarde transaction
             </summary>
             <param name="assetName"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.Buy(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.IExchange.Buy(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a buy order
             </summary>
@@ -398,7 +398,7 @@
             <param name="dry"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.Sell(Cryptothune.Lib.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
+        <member name="M:CryptoThune.Net.IExchange.Sell(CryptoThune.Net.AssetSymbol,System.Double,System.Double,System.Nullable{System.DateTime},System.Boolean)">
             <summary>
             Place a sell order
             </summary>
@@ -409,78 +409,78 @@
             <param name="dry"></param>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.PreventRateLimit">
+        <member name="M:CryptoThune.Net.IExchange.PreventRateLimit">
             <summary>
             Pause the execution according to the current rate limiter counter.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.IExchange.ResetRateLimitCounter">
+        <member name="M:CryptoThune.Net.IExchange.ResetRateLimitCounter">
             <summary>
             Reset the rate limit counter
             </summary>
         </member>
-        <member name="T:Cryptothune.Lib.Trade">
+        <member name="T:CryptoThune.Net.Trade">
             <summary>
             A trade object
             </summary>
         </member>
-        <member name="T:Cryptothune.Lib.Trade.TOrderType">
+        <member name="T:CryptoThune.Net.Trade.TOrderType">
             <summary>
             Buy, or Sell
             </summary>
         </member>
-        <member name="F:Cryptothune.Lib.Trade.TOrderType.Buy">
+        <member name="F:CryptoThune.Net.Trade.TOrderType.Buy">
             <summary>
             A Buy trade
             </summary>
         </member>
-        <member name="F:Cryptothune.Lib.Trade.TOrderType.Sell">
+        <member name="F:CryptoThune.Net.Trade.TOrderType.Sell">
             <summary>
             A Sell trade
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.Trade.#ctor">
+        <member name="M:CryptoThune.Net.Trade.#ctor">
             <summary>
             ctor
             </summary>
         </member>
-        <member name="P:Cryptothune.Lib.Trade.Timestamp">
+        <member name="P:CryptoThune.Net.Trade.Timestamp">
             <summary>
             The date time when the trade occur
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.Trade.Quantity">
+        <member name="P:CryptoThune.Net.Trade.Quantity">
             <summary>
             the quantity of asset trade.
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.Trade.Asset">
+        <member name="P:CryptoThune.Net.Trade.Asset">
             <summary>
             The trade asset
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.Trade.RefPrice">
+        <member name="P:CryptoThune.Net.Trade.RefPrice">
             <summary>
             The reference price
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.Trade.OrderType">
+        <member name="P:CryptoThune.Net.Trade.OrderType">
             <summary>
             Buy or Sell?
             </summary>
             <value></value>
         </member>
-        <member name="T:Cryptothune.Lib.RetryHelper`1">
+        <member name="T:CryptoThune.Net.RetryHelper`1">
             <summary>
             Helper class about retries on case of errors
             </summary>
             <typeparam name="T"></typeparam>
         </member>
-        <member name="M:Cryptothune.Lib.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Action)">
+        <member name="M:CryptoThune.Net.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Action)">
             <summary>
             Retry on exception
             </summary>
@@ -488,7 +488,7 @@
             <param name="delay">Delay betzeen 2 retry</param>
             <param name="operation">A void func to call if success.</param>
         </member>
-        <member name="M:Cryptothune.Lib.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Func{CryptoExchange.Net.Objects.WebCallResult{`0}})">
+        <member name="M:CryptoThune.Net.RetryHelper`1.RetryOnException(System.Int32,System.TimeSpan,System.Func{CryptoExchange.Net.Objects.WebCallResult{`0}})">
             <summary>
             Retry on error
             </summary>
@@ -497,54 +497,18 @@
             <param name="operation">the function to call.</param>
             <returns></returns>
         </member>
-        <member name="T:Cryptothune.Lib.Funiol">
-            <summary>
-            Funiol, the strangest trader ever.
-            </summary>
-        </member>
-        <member name="M:Cryptothune.Lib.Funiol.#ctor(System.Double,System.Double,System.Double)">
-            <summary>
-            ctor
-            </summary>
-            <param name="threshold">Threshold to trig the decision</param>
-            <param name="ruptor">% to force a decision</param>
-            <param name="proba">The probability to take a decision</param>
-        </member>
-        <member name="M:Cryptothune.Lib.Funiol.Name">
-            <summary>
-            The name of this algo
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Cryptothune.Lib.Funiol.Percentage(System.Double,System.Double)">
-            <summary>
-            Help function that compute percentage
-            </summary>
-            <param name="part"></param>
-            <param name="whole"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Cryptothune.Lib.Funiol.Decide(System.Double,System.Double,Cryptothune.Lib.Trade.TOrderType)">
-            <summary>
-            The 'brain' that decide if yes or no it must do an action.
-            </summary>
-            <param name="curPrice"></param>
-            <param name="refPrice"></param>
-            <param name="prevAction"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Cryptothune.Lib.IStrategy">
+        <member name="T:CryptoThune.Net.IStrategy">
             <summary>
             Strategy interface
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.IStrategy.Name">
+        <member name="M:CryptoThune.Net.IStrategy.Name">
             <summary>
             The name of this strategy
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Cryptothune.Lib.IStrategy.Decide(System.Double,System.Double,Cryptothune.Lib.Trade.TOrderType)">
+        <member name="M:CryptoThune.Net.IStrategy.Decide(System.Double,System.Double,CryptoThune.Net.Trade.TOrderType)">
             <summary>
             The algo to implement
             </summary>
@@ -553,12 +517,12 @@
             <param name="prevAction"></param>
             <returns></returns>
         </member>
-        <member name="T:Cryptothune.Lib.StrategyObject">
+        <member name="T:CryptoThune.Net.StrategyObject">
             <summary>
             Object that contains a strategy linked to a given asset.
             </summary>
         </member>
-        <member name="M:Cryptothune.Lib.StrategyObject.#ctor(Cryptothune.Lib.IStrategy,Cryptothune.Lib.AssetSymbol,System.Double)">
+        <member name="M:CryptoThune.Net.StrategyObject.#ctor(CryptoThune.Net.IStrategy,CryptoThune.Net.AssetSymbol,System.Double)">
             <summary>
             ctor
             </summary>
@@ -566,19 +530,19 @@
             <param name="assetName"></param>
             <param name="percent"></param>
         </member>
-        <member name="P:Cryptothune.Lib.StrategyObject.Strategy">
+        <member name="P:CryptoThune.Net.StrategyObject.Strategy">
             <summary>
             the strategy linkedto that object
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.StrategyObject.AssetName">
+        <member name="P:CryptoThune.Net.StrategyObject.AssetName">
             <summary>
             The asset
             </summary>
             <value></value>
         </member>
-        <member name="P:Cryptothune.Lib.StrategyObject.Percentage">
+        <member name="P:CryptoThune.Net.StrategyObject.Percentage">
             <summary>
             The percentage of total money to apply on the asset for the given strategy.
             </summary>
