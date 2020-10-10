@@ -1,6 +1,6 @@
 using System;
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// Object that contains a strategy linked to a given asset.

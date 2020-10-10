@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// Define what is a symbol

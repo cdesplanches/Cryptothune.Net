@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>cryptothune.Lib</name>
+        <name>CryptoThune.Net</name>
     </assembly>
     <members>
         <member name="T:Cryptothune.Lib.BotThune`1">

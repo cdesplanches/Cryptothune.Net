@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\cryptothune.Lib\cryptothune.Lib.csproj" />
+    <ProjectReference Include="..\CryptoThune.Net\CryptoThune.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>

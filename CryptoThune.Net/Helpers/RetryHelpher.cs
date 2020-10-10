@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Objects;
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// Helper class about retries on case of errors

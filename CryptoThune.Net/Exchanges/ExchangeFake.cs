@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Collections.Generic;
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// A 'fake' exchqnge market, built on top of the kraken public exchange market.

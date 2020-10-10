@@ -12,7 +12,7 @@ using NLog;
 
 
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// Kraken market object

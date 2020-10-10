@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using Cryptothune.Lib;
+using CryptoThune.Net;
 
 namespace Cryptothune.Tests
 {

@@ -1,12 +1,9 @@
 using System;
-using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
 using System.Drawing;
 
-namespace Cryptothune.Lib
+namespace CryptoThune.Net
 {
     /// <summary>
     /// The Bot class that apply strategy on a given crypto market exchange place
