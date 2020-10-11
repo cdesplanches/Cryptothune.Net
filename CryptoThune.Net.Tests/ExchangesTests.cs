@@ -7,6 +7,16 @@ namespace CryptoThune.Net.Tests
     [TestFixture]
     public class ExchangesTests
     {
+        /// <summary>
+        /// Test the creation of Symbol Asset Object.
+        /// </summary>
+        [TestCase()]
+        public void TestNormalizeSymbolName()
+        {
+            ExchangeFake kr = new ExchangeFake();
+            var xtz = kr.NormalizeSymbolName("XRPEUR");
+            Assert.AreEqual(xtz.SymbolName, "XRPEUR");
+        }
         [TestCase()]
         public void TestFakeBuySell()
         {
