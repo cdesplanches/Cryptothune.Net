@@ -10,6 +10,12 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="P:CryptoThune.Net.BotThune`1.Strategies">
+            <summary>
+            All the Strategies available for the bot.
+            </summary>
+            <value></value>
+        </member>
         <member name="M:CryptoThune.Net.BotThune`1.#ctor">
             <summary>
             ctor

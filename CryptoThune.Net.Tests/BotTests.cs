@@ -8,6 +8,14 @@ namespace CryptoThune.Net.Tests
     public class BotTests
     {
         [TestCase()]
+        public void TestStrategies()
+        {
+            var bot = new BotThune<ExchangeFake>();
+            var st = bot.Strategies;
+            Assert.IsEmpty(st, "looks like you have Strategy(ies) available on a brand new bot?!");
+        }
+
+        [TestCase()]
         public void TestAssets()
         {
             //var bot = new BotThune<ExchangeKraken>();

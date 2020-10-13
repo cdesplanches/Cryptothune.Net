@@ -11,13 +11,18 @@ namespace CryptoThune.Net
     /// <typeparam name="T"></typeparam>
     public class BotThune<T> where T : IExchange, new()
     {
-        private List<StrategyObject> _strategies = new List<StrategyObject>();
+        /// <summary>
+        /// All the Strategies available for the bot.
+        /// </summary>
+        /// <value></value>
+        public List<StrategyObject> Strategies { get; private set; }
         /// <summary>
         /// ctor
         /// </summary>
         public BotThune()
         {
             MarketExchange = new T();
+            Strategies = new List<StrategyObject>();
         }
         /// <summary>
         /// return the market exchange place object
@@ -34,7 +39,7 @@ namespace CryptoThune.Net
         public void AddStrategy( IStrategy strategy, string symbol, double percent = 100.0)
         {
             var assetName = MarketExchange.NormalizeSymbolName(symbol);
-            _strategies.Add( new StrategyObject(strategy, assetName, percent) );
+            Strategies.Add( new StrategyObject(strategy, assetName, percent) );
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace CryptoThune.Net
 
             var marketPrices = new List<ValueTuple<double, string, double>>();
             var plt = new Dictionary<string, ScottPlot.Plot>();
-            foreach ( var stratDef in _strategies )
+            foreach ( var stratDef in Strategies )
             {
                 var symbol = stratDef.AssetName;
                 var strategy = stratDef.Strategy;
@@ -100,7 +105,7 @@ namespace CryptoThune.Net
                 if (marketEntry.Item1>=oa)
                 {
                     dt = DateTime.FromOADate(marketEntry.Item1);
-                    foreach ( var stratDef in _strategies )
+                    foreach ( var stratDef in Strategies )
                     {
                         var assetName = stratDef.AssetName;
                         if ( assetName.BaseName == marketEntry.Item2 )
@@ -160,7 +165,7 @@ namespace CryptoThune.Net
         {
             while (true)
             {
-                foreach ( var stratDef in _strategies )
+                foreach ( var stratDef in Strategies )
                 {
                     var assetName = stratDef.AssetName;
                     var strategy = stratDef.Strategy;
@@ -191,7 +196,7 @@ namespace CryptoThune.Net
         {
             while (true)
             {
-                foreach ( var stratDef in _strategies )
+                foreach ( var stratDef in Strategies )
                 {
                     var assetName = stratDef.AssetName;
                     var strategy = stratDef.Strategy;
