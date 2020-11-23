@@ -12,6 +12,14 @@
     <DocumentationFile>CryptoThune.Net.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="licenses\LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="JsonSubTypes" Version="1.8.0" />
