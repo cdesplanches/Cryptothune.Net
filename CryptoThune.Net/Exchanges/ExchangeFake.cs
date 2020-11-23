@@ -3,6 +3,7 @@ using System.Linq;
 using System.Data;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using CryptoThune.Net.Objects;
 
 namespace CryptoThune.Net
 {
@@ -98,7 +99,6 @@ namespace CryptoThune.Net
         {
             RateLimiterPenality += 6000;
             return _money;
-//            return _assetPortfolio[asset];
         }
         /// <summary>
         /// Fake a deposit order (update the entry on the sqlite DB)
@@ -364,33 +364,23 @@ namespace CryptoThune.Net
 
             var bal = Balances(dt);
             var balance = bal[assetName.BaseName];
-
+            var fees = Fees((price*amount), orderType);
+            decimal total = (decimal)((price*amount)-fees);
+            t.Quantity = (double)amount;
             if ( orderType == Trade.TOrderType.Buy )
             {
-                var fees = Fees((price*amount), orderType);
-                decimal total = (decimal)((price*amount)-fees);
-
-                t.Quantity = (double)amount;
                 balance += (decimal)amount;
                 _assetPortfolio[assetName.QuoteName] -= (double)total;
-                //_money -= (double)total;
             }
             else
             {
-                var fees = Fees((price*amount), orderType);
-                decimal total = (decimal)((price*amount)-fees);
-
-                t.Quantity = (double)amount;
                 balance -= (decimal)amount;
                 _assetPortfolio[assetName.QuoteName] += (double)total;
-                //_money += (double)total;
             }
-
             
             _assetPortfolio[assetName.BaseName] = (double)balance;
 
             _tradeHistory.Add(t);
-
             return true;
         }
     }

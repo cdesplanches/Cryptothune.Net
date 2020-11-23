@@ -14,7 +14,6 @@ namespace CryptoThune.Net.Tests
             var st = bot.Strategies;
             Assert.IsEmpty(st, "looks like you have Strategy(ies) available on a brand new bot?!");
         }
-
         [TestCase()]
         public void TestAssets()
         {

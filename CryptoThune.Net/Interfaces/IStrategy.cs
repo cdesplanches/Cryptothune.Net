@@ -1,6 +1,7 @@
 using System;
+using CryptoThune.Net.Objects;
 
-namespace CryptoThune.Net
+namespace CryptoThune.Net.Interfaces
 {
     /// <summary>
     /// Strategy interface

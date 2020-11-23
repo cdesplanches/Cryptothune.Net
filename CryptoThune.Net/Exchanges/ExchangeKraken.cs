@@ -9,7 +9,8 @@ using Kraken.Net.Converters;
 using CryptoExchange.Net.RateLimiter;
 using System.Collections.Generic;
 using NLog;
-
+using CryptoThune.Net.Objects;
+using CryptoThune.Net.Interfaces;
 
 
 namespace CryptoThune.Net
@@ -44,6 +45,7 @@ namespace CryptoThune.Net
                 {
                     var ko = new KrakenClientOptions();
                     ko.ApiCredentials = new ApiCredentials(stream, "krakenKey", "krakenSecret");
+                    ko.RateLimitingBehaviour = CryptoExchange.Net.Objects.RateLimitingBehaviour.Wait;
                     kc = new KrakenClient(ko);
                     _privateAPI = true;
                 }
@@ -156,8 +158,10 @@ namespace CryptoThune.Net
         {
             var mk = RetryHelper<KrakenUserTradesPage>.RetryOnException(_retryTimes, _retryDelay, () => kc.GetTradeHistory() );
             RateLimiterPenality += 6000;
-            var rt = mk.Data.Trades.First( x => x.Value.Symbol==assetName.SymbolName );
-            
+            var rt = mk.Data.Trades.FirstOrDefault( x => x.Value.Symbol==assetName.SymbolName );
+            if ( rt.Value == null )
+                return null;
+
             var trade = new Trade();
             trade.RefPrice = (double)rt.Value.Price;
             trade.OrderType = rt.Value.Side==Kraken.Net.Objects.OrderSide.Buy?Trade.TOrderType.Buy:Trade.TOrderType.Sell;

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using CryptoThune.Net.Interfaces;
+using CryptoThune.Net.Objects;
 
 namespace CryptoThune.Net
 {
@@ -15,7 +17,7 @@ namespace CryptoThune.Net
         /// All the Strategies available for the bot.
         /// </summary>
         /// <value></value>
-        public List<StrategyObject> Strategies { get; private set; }
+        public List<StrategyObject> Strategies { get; set; }
         /// <summary>
         /// ctor
         /// </summary>
@@ -113,33 +115,35 @@ namespace CryptoThune.Net
                             var strategy = stratDef.Strategy;
                             var marketPrice = marketEntry.Item3;
                             var prevTrade = MarketExchange.LatestTrade(assetName);
-                            if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
+                            if ( prevTrade != null )
                             {
-                                oactrl = oa;
-                                if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                                if ( strategy.Decide(marketEntry.Item3, prevTrade.RefPrice, prevTrade.OrderType) )
                                 {
-                                    if ( MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                    oactrl = oa;
+                                    if (prevTrade.OrderType == Trade.TOrderType.Buy)
                                     {
-                                        ++cptOp;
-                                        plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
-                                        xs.Add(oa);
-                                        ys.Add(MarketExchange.Balance("ZEUR"));
-                                        //pltMoney.PlotPoint(oa, MarketExchange.Balance("ZEUR"), color: Color.Green );
+                                        if ( MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                        {
+                                            ++cptOp;
+                                            plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Red );
+                                            xs.Add(oa);
+                                            ys.Add(MarketExchange.Balance("ZEUR"));
+                                        }
+                                            
                                     }
-                                        
-                                }
-                                else
-                                {
-                                    if ( MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                    else
                                     {
-                                        ++cptOp;
-                                        plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
-                                        xs.Add(oa);
-                                        ys.Add(MarketExchange.Balance("ZEUR"));
-                                        //pltMoney.PlotPoint(oa, MarketExchange.Balance("ZEUR"), color: Color.Red );
+                                        if ( MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, dt, false) )
+                                        {
+                                            ++cptOp;
+                                            plt[assetName.SymbolName].PlotPoint(marketEntry.Item1, marketPrice, color: Color.Green );
+                                            xs.Add(oa);
+                                            ys.Add(MarketExchange.Balance("ZEUR"));
+                                        }
                                     }
                                 }
                             }
+                          
                         }
                     }
                 }
@@ -172,16 +176,19 @@ namespace CryptoThune.Net
 
                     var marketPrice = MarketExchange.MarketPrice(assetName);
                     var prevTrade = MarketExchange.LatestTrade(assetName);
-                    if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
+                    if ( prevTrade != null )
                     {
-                        if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                        if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
                         {
-                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, false);
-                        }
-                        else
-                        {
-                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, false);
-                        }
+                            if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                            {
+                                MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, false);
+                            }
+                            else
+                            {
+                                MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, false);
+                            }
+                        }    
                     }
 
                     MarketExchange.PreventRateLimit();
@@ -203,18 +210,21 @@ namespace CryptoThune.Net
 
                     var marketPrice = MarketExchange.MarketPrice(assetName);
                     var prevTrade = MarketExchange.LatestTrade(assetName);
-                    if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
+                    if ( prevTrade != null )
                     {
-                        if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                        if ( strategy.Decide(marketPrice, prevTrade.RefPrice, prevTrade.OrderType) )
                         {
-                            MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, true);
-                        }
-                        else
-                        {
-                            MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, true);
+                            if (prevTrade.OrderType == Trade.TOrderType.Buy)
+                            {
+                                MarketExchange.Sell(assetName, marketPrice, stratDef.Percentage, null, true);
+                            }
+                            else
+                            {
+                                MarketExchange.Buy(assetName, marketPrice, stratDef.Percentage, null, true);
+                            }
                         }
                     }
-
+                    
                     MarketExchange.PreventRateLimit();
                 }
             }

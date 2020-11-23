@@ -8,6 +8,29 @@ namespace CryptoThune.Net.Tests
     public class ExchangesTests
     {
         /// <summary>
+        /// Test to get latest trades
+        /// </summary>
+        [TestCase()]
+        public void TestLatestTrade()
+        {
+            ExchangeKraken kr = new ExchangeKraken();
+            var xtz = kr.NormalizeSymbolName("XRPEUR");
+            var tr = kr.LatestTrade(xtz);
+
+            var xrp = kr.NormalizeSymbolName("XRPEUR");
+            tr = kr.LatestTrade(xrp);
+
+            var btc = kr.NormalizeSymbolName("BTCEUR");
+            tr = kr.LatestTrade(btc);
+        }
+        [TestCase()]
+        public void TestRecentTrade()
+        {
+            ExchangeKraken kr = new ExchangeKraken();
+            var xtz = kr.NormalizeSymbolName("BTCEUR");
+            var tr = kr.TradesHistory(xtz, DateTime.Now.AddMonths(-2));
+        }
+        /// <summary>
         /// Test the creation of Symbol Asset Object.
         /// </summary>
         [TestCase()]

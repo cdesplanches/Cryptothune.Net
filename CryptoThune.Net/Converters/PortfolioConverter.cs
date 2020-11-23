@@ -1,0 +1,41 @@
+using System;
+using System.Reflection;
+using CryptoThune.Net.Objects;
+using Newtonsoft.Json;
+
+
+namespace CryptoThune.Net.Converters
+{
+    public class PortfolioConverter : JsonConverter
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(PortfolioEntry);
+        }
+
+        /// <inheritdoc />
+        public override object? ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.Value == null)
+                return null;
+
+            var t = long.Parse(reader.Value.ToString());
+            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(t);
+        }
+
+        /// <inheritdoc />
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            Type type = value.GetType();
+            writer.WriteValue(value);
+/*
+            var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+
+
+            writer.WriteValue((long)Math.Round(((DateTime)value - new DateTime(1970, 1, 1)).TotalMilliseconds));
+            */
+        }
+
+    }
+}

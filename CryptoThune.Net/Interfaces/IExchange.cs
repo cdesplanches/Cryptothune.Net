@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using CryptoThune.Net.Objects;
 
-namespace CryptoThune.Net
+namespace CryptoThune.Net.Interfaces
 {
     /// <summary>
     /// Interface for an exchange market

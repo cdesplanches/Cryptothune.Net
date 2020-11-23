@@ -1,6 +1,6 @@
 using System;
 
-namespace CryptoThune.Net
+namespace CryptoThune.Net.Objects
 {
     /// <summary>
     /// A trade object

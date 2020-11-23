@@ -1,6 +1,7 @@
 using System;
+using CryptoThune.Net.Interfaces;
 
-namespace CryptoThune.Net
+namespace CryptoThune.Net.Objects
 {
     /// <summary>
     /// Object that contains a strategy linked to a given asset.
