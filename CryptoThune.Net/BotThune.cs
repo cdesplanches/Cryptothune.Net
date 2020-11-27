@@ -97,7 +97,7 @@ namespace CryptoThune.Net
                 var oa = dt.AddMilliseconds(ms).ToOADate();
                 if ( oa == oactrl )
                 {
-                    ms += 1000;
+                    ms += 6000;
                     continue;
                 }
                     
